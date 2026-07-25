@@ -26,6 +26,7 @@ export default function SettingsPage() {
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -98,24 +99,27 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarUploading(true);
+    setAvatarError("");
     const supabase = createClient();
     await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]).catch(() => {});
     const ext = file.name.split(".").pop();
     const filePath = `${user.id}/avatar.${ext}`;
     const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
-    if (uploadError) { setAvatarUploading(false); return; }
+    if (uploadError) { setAvatarError(uploadError.message); setAvatarUploading(false); return; }
     const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
     const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: urlData.publicUrl } });
-    if (updateError) { setAvatarUploading(false); return; }
+    if (updateError) { setAvatarError(updateError.message); setAvatarUploading(false); return; }
     setAvatarUrl(urlData.publicUrl);
     setAvatarUploading(false);
     window.dispatchEvent(new CustomEvent("avatar-updated"));
   };
 
   const removeAvatar = async () => {
+    setAvatarError("");
     const supabase = createClient();
     await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]).catch(() => {});
-    await supabase.auth.updateUser({ data: { avatar_url: null } });
+    const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: null } });
+    if (updateError) { setAvatarError(updateError.message); return; }
     setAvatarUrl(null);
     window.dispatchEvent(new CustomEvent("avatar-updated"));
   };
@@ -154,6 +158,7 @@ export default function SettingsPage() {
               )}
               <input ref={fileInputRef} type="file" accept="image/*" onChange={uploadAvatar} className="hidden" />
             </div>
+            {avatarError && <p className="text-xs font-medium text-[#ff3b30] mt-2">{avatarError}</p>}
             <div>
               <p className="text-sm font-medium text-[#1d1d1f]">{name || "Your name"}</p>
               <p className="text-xs text-[#86868b]">{email}</p>
