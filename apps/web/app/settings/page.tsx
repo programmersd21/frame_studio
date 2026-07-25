@@ -101,11 +101,21 @@ export default function SettingsPage() {
     setAvatarUploading(true);
     setAvatarError("");
     const supabase = createClient();
-    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]).catch(() => {});
     const ext = file.name.split(".").pop();
     const filePath = `${user.id}/avatar.${ext}`;
-    const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+
+    // remove any old avatar with different extension first
+    await supabase.storage.from("avatars").remove([
+      `${user.id}/avatar.png`, `${user.id}/avatar.jpg`,
+      `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`,
+    ]);
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file);
+
     if (uploadError) { setAvatarError(uploadError.message); setAvatarUploading(false); return; }
+
     const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
     const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: urlData.publicUrl } });
     if (updateError) { setAvatarError(updateError.message); setAvatarUploading(false); return; }
@@ -117,7 +127,10 @@ export default function SettingsPage() {
   const removeAvatar = async () => {
     setAvatarError("");
     const supabase = createClient();
-    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]).catch(() => {});
+    await supabase.storage.from("avatars").remove([
+      `${user.id}/avatar.png`, `${user.id}/avatar.jpg`,
+      `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`,
+    ]);
     const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: null } });
     if (updateError) { setAvatarError(updateError.message); return; }
     setAvatarUrl(null);
