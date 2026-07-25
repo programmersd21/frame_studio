@@ -99,20 +99,21 @@ export default function SettingsPage() {
     if (!file) return;
     setAvatarUploading(true);
     const supabase = createClient();
-    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]);
+    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]).catch(() => {});
     const ext = file.name.split(".").pop();
     const filePath = `${user.id}/avatar.${ext}`;
     const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
     if (uploadError) { setAvatarUploading(false); return; }
     const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    await supabase.auth.updateUser({ data: { avatar_url: urlData.publicUrl } });
+    const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: urlData.publicUrl } });
+    if (updateError) { setAvatarUploading(false); return; }
     setAvatarUrl(urlData.publicUrl);
     setAvatarUploading(false);
   };
 
   const removeAvatar = async () => {
     const supabase = createClient();
-    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]);
+    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]).catch(() => {});
     await supabase.auth.updateUser({ data: { avatar_url: null } });
     setAvatarUrl(null);
   };

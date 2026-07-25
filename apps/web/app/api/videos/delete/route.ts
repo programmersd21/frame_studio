@@ -6,10 +6,10 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    if (authErr || !user) {
+      return NextResponse.json({ error: authErr?.message || "Not authenticated" }, { status: 401 });
     }
 
     const { id } = await req.json();

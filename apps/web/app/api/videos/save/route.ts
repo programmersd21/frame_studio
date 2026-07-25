@@ -8,17 +8,17 @@ export const maxDuration = 60;
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    if (authErr || !user) {
+      const reason = authErr?.message || "Not authenticated";
+      return NextResponse.json({ error: reason }, { status: 401 });
     }
 
     const formData = await req.formData();
     const video = formData.get("video") as File | null;
     const prompt = formData.get("prompt") as string | null;
     const model = formData.get("model") as string | null;
-    const durationSeconds = parseFloat(formData.get("durationSeconds") as string || "0");
 
     if (!video) {
       return NextResponse.json({ error: "No video file provided" }, { status: 400 });
@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
       filename,
       storage_path: storagePath,
       video_url: publicUrl,
-      duration_seconds: durationSeconds || null,
     });
 
     if (dbError) {

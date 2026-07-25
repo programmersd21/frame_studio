@@ -65,6 +65,10 @@ create policy "Users can view videos"
   on storage.objects for select
   using (bucket_id = 'videos');
 
+create policy "Users can delete own avatars"
+  on storage.objects for delete
+  using (bucket_id = 'avatars' and auth.uid() = owner);
+
 create policy "Users can delete own videos"
   on storage.objects for delete
   using (

@@ -24,7 +24,7 @@ export default function SignUpPage() {
     setError("");
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -36,6 +36,9 @@ export default function SignUpPage() {
 
     if (error) {
       setError(error.message);
+    } else if (data.session) {
+      router.push("/profile");
+      router.refresh();
     } else {
       router.push("/profile");
     }
