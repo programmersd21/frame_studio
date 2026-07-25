@@ -22,8 +22,10 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
+    document.body.style.overflow = "hidden";
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    return () => { document.body.style.overflow = ""; };
   }, []);
 
   const handleDownload = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -73,15 +75,12 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: isClosing ? 0 : 1, y: isClosing ? 40 : 0 }}
         transition={{ duration: 0.35, ease: SOFT }}
-        className="w-full h-full md:h-auto md:max-w-lg md:max-h-[90vh] flex flex-col"
+        className="w-full md:h-auto md:max-w-lg md:max-h-[90vh] flex flex-col"
+        style={{ height: "calc(100dvh - env(safe-area-inset-top, 0px))" }}
       >
         <div
-          className="flex flex-col w-full h-full md:h-auto rounded-none md:rounded-2xl overflow-hidden"
-          style={{
-            background: "rgba(255,255,255,0.95)",
-            backdropFilter: "blur(40px) saturate(200%)",
-            boxShadow: "0 -8px 32px rgba(0,0,0,0.05), 0 20px 60px rgba(0,0,0,0.06)",
-          }}
+          className="flex flex-col w-full md:rounded-2xl overflow-hidden"
+          style={{ height: "100%", background: "rgba(255,255,255,0.95)", backdropFilter: "blur(40px) saturate(200%)", boxShadow: "0 -8px 32px rgba(0,0,0,0.05), 0 20px 60px rgba(0,0,0,0.06)" }}
         >
           {/* Handle bar (mobile) */}
           <div className="md:hidden flex justify-center pt-3 pb-1 shrink-0">
@@ -114,7 +113,7 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
 
           {/* Actions — always visible */}
           <div className="mx-5 md:mx-6 h-[1px] bg-black/[0.05] shrink-0" />
-          <div className="px-5 md:px-6 py-4 md:py-4 flex items-center gap-3 shrink-0">
+          <div className="px-5 md:px-6 py-4 md:py-4 flex items-center gap-3 shrink-0" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 16px) + 16px)" }}>
             <button
               onClick={handleClose}
               className="flex-1 px-4 py-3 md:py-2.5 rounded-xl text-xs font-medium text-[#86868b] bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.06] transition-all duration-200 active:scale-95"
