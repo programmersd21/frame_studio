@@ -29,6 +29,7 @@ export default function SignUpPage() {
       password,
       options: {
         data: { full_name: name },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
@@ -37,7 +38,7 @@ export default function SignUpPage() {
     if (error) {
       setError(error.message);
     } else {
-      router.push("/profile");
+      setError("Check your email to confirm your account.");
     }
   };
 
@@ -142,7 +143,7 @@ export default function SignUpPage() {
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-xs font-medium text-[#ff3b30]"
+                  className={`text-xs font-medium ${error.includes("Check your email") ? "text-[#34c759]" : "text-[#ff3b30]"}`}
                 >
                   {error}
                 </motion.p>
