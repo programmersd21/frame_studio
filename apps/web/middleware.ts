@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthPage && !request.nextUrl.pathname.endsWith("/callback")) {
+  if (user && isAuthPage && !request.nextUrl.pathname.endsWith("/callback") && !request.nextUrl.pathname.endsWith("/signout")) {
     const url = request.nextUrl.clone();
     url.pathname = "/profile";
     return NextResponse.redirect(url);
