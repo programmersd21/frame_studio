@@ -70,16 +70,22 @@ export default function ProfilePage() {
         transition={{ duration: 0.6, ease: SOFT }}
         className="flex items-start justify-between mb-6 sm:mb-10"
       >
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0071e3]/10 flex items-center justify-center">
-              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0071e3]" strokeWidth={1.5} />
-            </div>
-            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#1d1d1f]">Profile</h1>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-black/[0.04] ring-2 ring-black/[0.06] flex items-center justify-center shrink-0">
+            {user?.user_metadata?.avatar_url ? (
+              <img src={user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <User className="w-5 h-5 sm:w-6 sm:h-6 text-[#86868b]" strokeWidth={1.5} />
+            )}
           </div>
-          <p className="text-xs sm:text-sm text-[#86868b] mt-1">
-            {user?.email || "Loading..."}
-          </p>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#1d1d1f]">
+              {user?.user_metadata?.full_name || "Profile"}
+            </h1>
+            <p className="text-xs sm:text-sm text-[#86868b] mt-0.5">
+              {user?.email || "Loading..."}
+            </p>
+          </div>
         </div>
         <a
           href="/auth/signout"

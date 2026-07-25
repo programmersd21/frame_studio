@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { User, Mail, Lock, Camera, Check, Eye, EyeOff, Trash2, AlertTriangle } from "lucide-react";
+import { User, Mail, Lock, Camera, Check, Eye, EyeOff, Trash2, AlertTriangle, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
@@ -98,15 +98,23 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarUploading(true);
+    const supabase = createClient();
+    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]);
     const ext = file.name.split(".").pop();
     const filePath = `${user.id}/avatar.${ext}`;
-    const supabase = createClient();
     const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
     if (uploadError) { setAvatarUploading(false); return; }
     const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
     await supabase.auth.updateUser({ data: { avatar_url: urlData.publicUrl } });
     setAvatarUrl(urlData.publicUrl);
     setAvatarUploading(false);
+  };
+
+  const removeAvatar = async () => {
+    const supabase = createClient();
+    await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]);
+    await supabase.auth.updateUser({ data: { avatar_url: null } });
+    setAvatarUrl(null);
   };
 
   if (loading) return (
@@ -135,6 +143,12 @@ export default function SettingsPage() {
                   <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full" />
                 ) : <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={2.5} />}
               </button>
+              {avatarUrl && (
+                <button onClick={removeAvatar}
+                  className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#ff3b30] text-white flex items-center justify-center shadow-md hover:bg-[#ff2d55] transition-colors">
+                  <X className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={2.5} />
+                </button>
+              )}
               <input ref={fileInputRef} type="file" accept="image/*" onChange={uploadAvatar} className="hidden" />
             </div>
             <div>

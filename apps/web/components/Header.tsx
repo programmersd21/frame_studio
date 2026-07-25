@@ -34,6 +34,11 @@ export const Header: React.FC = () => {
       setUser(data.user);
       setAvatarUrl(data.user?.user_metadata?.avatar_url || null);
     });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setAvatarUrl(session?.user?.user_metadata?.avatar_url || null);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const tabs = [
