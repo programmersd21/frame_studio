@@ -109,6 +109,7 @@ export default function SettingsPage() {
     if (updateError) { setAvatarUploading(false); return; }
     setAvatarUrl(urlData.publicUrl);
     setAvatarUploading(false);
+    window.dispatchEvent(new CustomEvent("avatar-updated"));
   };
 
   const removeAvatar = async () => {
@@ -116,6 +117,7 @@ export default function SettingsPage() {
     await supabase.storage.from("avatars").remove([`${user.id}/avatar.png`, `${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`]).catch(() => {});
     await supabase.auth.updateUser({ data: { avatar_url: null } });
     setAvatarUrl(null);
+    window.dispatchEvent(new CustomEvent("avatar-updated"));
   };
 
   if (loading) return (

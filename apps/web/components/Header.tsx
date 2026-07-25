@@ -30,15 +30,16 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
+    const refreshUser = async () => {
+      const { data } = await supabase.auth.getUser();
       setUser(data.user);
       setAvatarUrl(data.user?.user_metadata?.avatar_url || null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setAvatarUrl(session?.user?.user_metadata?.avatar_url || null);
-    });
-    return () => subscription.unsubscribe();
+    };
+    refreshUser();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => { refreshUser(); });
+    const onAvatarChange = () => refreshUser();
+    window.addEventListener("avatar-updated", onAvatarChange);
+    return () => { subscription.unsubscribe(); window.removeEventListener("avatar-updated", onAvatarChange); };
   }, []);
 
   const tabs = [

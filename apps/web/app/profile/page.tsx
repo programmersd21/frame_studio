@@ -27,13 +27,15 @@ export default function ProfilePage() {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
-    const init = async () => {
-      const supabase = createClient();
+    const supabase = createClient();
+    const refreshUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/auth/signin");
-        return;
-      }
+      setUser(user);
+      if (!user) router.push("/auth/signin");
+    };
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push("/auth/signin"); return; }
       setUser(user);
 
       const res = await fetch("/api/videos/list");
@@ -44,6 +46,9 @@ export default function ProfilePage() {
       setLoading(false);
     };
     init();
+    const onAvatarChange = () => refreshUser();
+    window.addEventListener("avatar-updated", onAvatarChange);
+    return () => window.removeEventListener("avatar-updated", onAvatarChange);
   }, [router]);
 
   const handleDelete = async (id: string) => {
