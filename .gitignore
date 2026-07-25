@@ -13,3 +13,4 @@ tmp
 *.jpg
 tsconfig.tsbuildinfo
 apps/web/tsconfig.tsbuildinfo
+supabase/.temp/

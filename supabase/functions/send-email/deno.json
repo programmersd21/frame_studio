@@ -1,0 +1,10 @@
+{
+  "name": "send-email",
+  "version": "1.0.0",
+  "tasks": {
+    "serve": "deno serve --allow-net --allow-env index.ts"
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.208.0/"
+  }
+}

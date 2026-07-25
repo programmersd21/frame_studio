@@ -77,14 +77,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 3. Set **Site URL** to `http://localhost:3000` (or your production URL)
 4. Run the SQL from [`supabase-setup.sql`](./supabase-setup.sql) in the SQL editor
 
-### 4. Custom email templates (recommended)
-
-1. Go to Supabase Dashboard → **Authentication → Email Templates**
-2. Open each template (confirmation, magic link, reset password, change email)
-3. Paste the corresponding HTML from [`email-templates/`](./email-templates/)
-4. These use CDN-loaded Plus Jakarta Sans with Apple-level design
-
-### 5. Run
+### 4. Run
 
 ```bash
 pnpm dev
@@ -120,18 +113,18 @@ Also update the Supabase Dashboard **Site URL** and **Redirect URLs** to match y
 - **Apply-style presets** for quick prompts
 
 ### Account (Supabase)
-- **Sign up / sign in** — email/password or magic link
-- **Forgot password** — reset flow with branded email
-- **Profile settings** — edit name, change email, update password
-- **Avatar upload** — profile picture stored in Supabase Storage
-- **Video history** — save videos, browse on profile, preview & delete
+- **Sign up / sign in** - email/password or magic link
+- **Forgot password** - reset flow with branded email
+- **Profile settings** - edit name, change email, update password
+- **Avatar upload** - profile picture stored in Supabase Storage
+- **Video history** - save videos, browse on profile, preview & delete
 
 ### UI
-- **Apple-level design** — glassmorphism, Plus Jakarta Sans, subtle shadows
-- **Responsive layout** — bottom tab nav on mobile, floating pill header on desktop
-- **PWA-ready** — manifest.json, standalone display, apple-touch-icon
-- **Custom animated cursor** — macOS-style arrow (hidden on touch devices)
-- **Smooth animations** — framer-motion micro-interactions throughout
+- **Apple-level design** - glassmorphism, Plus Jakarta Sans, subtle shadows
+- **Responsive layout** - bottom tab nav on mobile, floating pill header on desktop
+- **PWA-ready** - manifest.json, standalone display, apple-touch-icon
+- **Custom animated cursor** - macOS-style arrow (hidden on touch devices)
+- **Smooth animations** - framer-motion micro-interactions throughout
 
 ### Email (branded)
 - **CDN-loaded Plus Jakarta Sans** from Google Fonts
@@ -165,7 +158,7 @@ apps/web/                 Next.js app with API routes and UI
 │   │   ├── generate/     Video generation pipeline
 │   │   └── videos/       Save / list / delete saved videos
 │   ├── auth/
-│   │   ├── callback/     OAuth + email confirmation handler
+│   │   ├── callback/     OAuth + auth callback handler
 │   │   ├── signin/       Sign-in page (password + magic link)
 │   │   ├── signout/      Sign-out route
 │   │   ├── signup/       Sign-up page
@@ -186,7 +179,6 @@ apps/web/                 Next.js app with API routes and UI
 │   ├── manifest.json     PWA manifest
 │   └── icon-192.svg      App icon
 └── middleware.ts          Auth redirect middleware
-email-templates/            Branded HTML email templates (signup, magic link, reset, change)
 packages/pipeline/          AI processing (prompts, schemas, LLM client)
 packages/remotion-skeleton/ Template for video projects
 ```
