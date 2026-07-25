@@ -9,6 +9,7 @@ tmp
 *.mp4
 *.png
 !image.png
+!apps/web/public/icon-512.png
 *.jpeg
 *.jpg
 tsconfig.tsbuildinfo
