@@ -66,17 +66,17 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
       animate={{ opacity: isClosing ? 0 : 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35, ease: SOFT }}
-      className="fixed inset-0 z-[999] flex items-end md:items-center justify-center"
+      className="fixed inset-0 z-[999] flex items-center justify-center p-0 md:p-6"
       style={{ background: "rgba(249,249,251,0.8)", backdropFilter: "blur(40px)" }}
     >
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: isClosing ? 0 : 1, y: isClosing ? 40 : 0 }}
         transition={{ duration: 0.35, ease: SOFT }}
-        className="w-full md:max-w-lg md:mb-0"
+        className="w-full h-full md:h-auto md:max-w-lg md:max-h-[90vh] flex flex-col"
       >
         <div
-          className="md:glass rounded-t-3xl md:rounded-2xl overflow-hidden"
+          className="flex flex-col w-full h-full md:h-auto rounded-none md:rounded-2xl overflow-hidden"
           style={{
             background: "rgba(255,255,255,0.95)",
             backdropFilter: "blur(40px) saturate(200%)",
@@ -84,12 +84,12 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
           }}
         >
           {/* Handle bar (mobile) */}
-          <div className="md:hidden flex justify-center pt-3 pb-1">
+          <div className="md:hidden flex justify-center pt-3 pb-1 shrink-0">
             <div className="w-9 h-1 rounded-full bg-black/[0.12]" />
           </div>
 
           {/* Header */}
-          <div className="px-5 md:px-6 pt-2 md:pt-5 pb-3 md:pb-4 flex items-center justify-between">
+          <div className="px-5 md:px-6 pt-2 md:pt-5 pb-3 md:pb-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#34c759] shrink-0" style={{ boxShadow: "0 0 12px rgba(52,199,89,0.4)" }} />
               <span className="text-sm font-semibold text-[#1d1d1f] tracking-tight">Your video is ready</span>
@@ -99,21 +99,22 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
             </button>
           </div>
 
-          {/* Video */}
-          <div className="px-5 md:px-6 pb-4">
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto min-h-0 px-5 md:px-6 pb-4">
+            {/* Video */}
             <div className="rounded-xl overflow-hidden bg-black/[0.03] border border-black/[0.06] aspect-video">
               <video src={videoUrl} controls autoPlay className="w-full h-full object-contain" style={{ background: "#000" }} />
             </div>
+
+            {/* File info */}
+            <div className="pt-3 pb-1">
+              <p className="text-xs text-[#86868b] font-mono truncate">{filename}</p>
+            </div>
           </div>
 
-          {/* File info */}
-          <div className="px-5 md:px-6 pb-1">
-            <p className="text-xs text-[#86868b] font-mono truncate">{filename}</p>
-          </div>
-
-          {/* Actions */}
-          <div className="mx-5 md:mx-6 h-[1px] bg-black/[0.05]" />
-          <div className="px-5 md:px-6 py-4 md:py-4 flex items-center gap-3 pb-safe">
+          {/* Actions — always visible */}
+          <div className="mx-5 md:mx-6 h-[1px] bg-black/[0.05] shrink-0" />
+          <div className="px-5 md:px-6 py-4 md:py-4 flex items-center gap-3 shrink-0">
             <button
               onClick={handleClose}
               className="flex-1 px-4 py-3 md:py-2.5 rounded-xl text-xs font-medium text-[#86868b] bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.06] transition-all duration-200 active:scale-95"
