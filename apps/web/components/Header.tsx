@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Github, Play, User } from "lucide-react";
+import { Github, Play, User, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
@@ -13,6 +13,7 @@ export const Header: React.FC = () => {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -22,7 +23,10 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      setAvatarUrl(data.user?.user_metadata?.avatar_url || null);
+    });
   }, []);
 
   return (
@@ -112,6 +116,32 @@ export const Header: React.FC = () => {
           </span>
         </a>
 
+        {user && (
+          <Link
+            href="/settings"
+            className={`rounded-full text-xs font-medium flex items-center transition-all duration-200 ${
+              pathname === "/settings" ? "bg-black/[0.06] text-[#1d1d1f] border border-black/10 shadow-sm" : "text-[#86868b] hover:text-[#1d1d1f] hover:bg-black/[0.04]"
+            }`}
+            style={{
+              padding: scrolled ? "4px 10px" : "6px 14px",
+              transition: "padding 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <Settings className="w-3.5 h-3.5 shrink-0" strokeWidth={1.5} />
+            <span
+              className="overflow-hidden whitespace-nowrap"
+              style={{
+                maxWidth: scrolled ? "0px" : "52px",
+                opacity: scrolled ? 0 : 1,
+                marginLeft: scrolled ? "0px" : "5px",
+                transition: "max-width 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), margin-left 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+              }}
+            >
+              Settings
+            </span>
+          </Link>
+        )}
+
         <Link
           href={user ? "/profile" : "/auth/signin"}
           className="rounded-full text-xs font-medium flex items-center transition-all duration-200"
@@ -122,7 +152,11 @@ export const Header: React.FC = () => {
             transition: "padding 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         >
-          <User className="w-3.5 h-3.5 shrink-0" strokeWidth={1.5} />
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+          ) : (
+            <User className="w-3.5 h-3.5 shrink-0" strokeWidth={1.5} />
+          )}
           <span
             className="overflow-hidden whitespace-nowrap"
             style={{

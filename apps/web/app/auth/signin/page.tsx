@@ -180,14 +180,23 @@ export default function SignInPage() {
               transition={{ delay: 0.3, duration: 0.5, ease: SOFT }}
               className="mt-4 text-center"
             >
-              <button
-                type="button"
-                onClick={handleMagicLink}
-                disabled={loading || !email}
-                className="text-xs font-medium text-[#0071e3] hover:text-[#0077ed] transition-colors disabled:opacity-30"
-              >
-                Send magic link instead
-              </button>
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleMagicLink}
+                    disabled={loading || !email}
+                    className="text-xs font-medium text-[#0071e3] hover:text-[#0077ed] transition-colors disabled:opacity-30"
+                  >
+                    Send magic link
+                  </button>
+                  <span className="text-[#d2d2d7]">·</span>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs font-medium text-[#86868b] hover:text-[#1d1d1f] transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
             </motion.div>
           </div>
 
