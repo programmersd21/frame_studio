@@ -37,6 +37,7 @@ Browser                 Server (Vercel - FREE)
 - Remotion 4.0 for video rendering (client-side via WebCodecs)
 - Google Gemini API for AI code generation
 - Supabase for auth, storage, and database
+- PWA-ready with manifest + standalone display
 - **Zero infrastructure costs** — no servers, no AWS, no credit card
 
 ## Prerequisites
@@ -76,7 +77,14 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 3. Set **Site URL** to `http://localhost:3000` (or your production URL)
 4. Run the SQL from [`supabase-setup.sql`](./supabase-setup.sql) in the SQL editor
 
-### 4. Run
+### 4. Custom email templates (recommended)
+
+1. Go to Supabase Dashboard → **Authentication → Email Templates**
+2. Open each template (confirmation, magic link, reset password, change email)
+3. Paste the corresponding HTML from [`email-templates/`](./email-templates/)
+4. These use CDN-loaded Plus Jakarta Sans with Apple-level design
+
+### 5. Run
 
 ```bash
 pnpm dev
@@ -101,17 +109,35 @@ Deploy to Vercel. Set these environment variables in Vercel:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key |
 | `NEXT_PUBLIC_SITE_URL` | Your production URL (e.g. `https://frame-studio.vercel.app`) |
 
-Also update the Supabase dashboard **Site URL** to match your production domain.
+Also update the Supabase Dashboard **Site URL** and **Redirect URLs** to match your production domain.
 
 ## Features
 
+### Core
 - **Zero infrastructure** — renders entirely in the browser
-- **Account system** — sign up / sign in via Supabase Auth (email/password or magic link)
-- **Video history** — save videos to your account, browse them on your profile page
-- **Custom animated cursor** (macOS-style arrow with hover states)
-- **Model selector** (6 Gemini models)
+- **Model selector** (8 Gemini models)
 - **Real-time progress screen** with stage updates
-- **Premium glassmorphic UI**
+- **Apply-style presets** for quick prompts
+
+### Account (Supabase)
+- **Sign up / sign in** — email/password or magic link
+- **Forgot password** — reset flow with branded email
+- **Profile settings** — edit name, change email, update password
+- **Avatar upload** — profile picture stored in Supabase Storage
+- **Video history** — save videos, browse on profile, preview & delete
+
+### UI
+- **Apple-level design** — glassmorphism, Plus Jakarta Sans, subtle shadows
+- **Responsive layout** — bottom tab nav on mobile, floating pill header on desktop
+- **PWA-ready** — manifest.json, standalone display, apple-touch-icon
+- **Custom animated cursor** — macOS-style arrow (hidden on touch devices)
+- **Smooth animations** — framer-motion micro-interactions throughout
+
+### Email (branded)
+- **CDN-loaded Plus Jakarta Sans** from Google Fonts
+- **Gradient accent bars** matching each email's purpose
+- **Premium CTA buttons** with subtle glow
+- **Clean white cards** on light gray background
 
 ## Browser Support
 
@@ -142,17 +168,25 @@ apps/web/                 Next.js app with API routes and UI
 │   │   ├── callback/     OAuth + email confirmation handler
 │   │   ├── signin/       Sign-in page (password + magic link)
 │   │   ├── signout/      Sign-out route
-│   │   └── signup/       Sign-up page
-│   └── profile/          Video history grid with preview & delete
+│   │   ├── signup/       Sign-up page
+│   │   ├── forgot-password/  Request reset link
+│   │   └── reset-password/   Set new password
+│   ├── profile/          Video history grid with preview & delete
+│   └── settings/         Edit name, email, password, avatar
 ├── components/
-│   ├── Header.tsx        Auth-aware nav (Profile / Sign in link)
-│   └── PreviewScreen.tsx Preview with download + save to account
+│   ├── Header.tsx        Desktop pill nav / mobile bottom tab bar
+│   ├── PreviewScreen.tsx Full-screen mobile preview with save/download
+│   └── ...               PromptBox, ProgressScreen, Footer, etc.
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts     Browser Supabase client
 │   │   └── server.ts     Server Supabase client (cookies)
 │   └── apiKey.ts         Server-side API key cookie management
+├── public/
+│   ├── manifest.json     PWA manifest
+│   └── icon-192.svg      App icon
 └── middleware.ts          Auth redirect middleware
+email-templates/            Branded HTML email templates (signup, magic link, reset, change)
 packages/pipeline/          AI processing (prompts, schemas, LLM client)
 packages/remotion-skeleton/ Template for video projects
 ```
@@ -163,7 +197,10 @@ packages/remotion-skeleton/ Template for video projects
 - Gemini API key stored in HTTP-only cookies
 - Saved videos stored in Supabase Storage (`videos` bucket)
 - Video metadata stored in a `videos` PostgreSQL table (RLS-protected)
+- Avatars stored in Supabase Storage (`avatars` bucket)
 - Videos render at 1920x1080, 30fps
+- Custom cursor is disabled on touch devices automatically
+- Email templates load Plus Jakarta Sans from Google Fonts CDN
 
 ## License
 
