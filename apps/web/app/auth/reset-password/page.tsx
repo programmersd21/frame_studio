@@ -19,10 +19,8 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.onAuthStateChange((event) => {
-      if (event !== "PASSWORD_RECOVERY") {
-        router.push("/auth/signin");
-      }
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) router.push("/auth/signin");
     });
   }, [router]);
 
