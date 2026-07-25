@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { User, Mail, Lock, Camera, Check, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Camera, Check, Eye, EyeOff, Trash2, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
@@ -26,6 +26,8 @@ export default function SettingsPage() {
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -209,6 +211,44 @@ export default function SettingsPage() {
               </button>
             </div>
           </form>
+        </Card>
+
+        <Card delay={0.3}>
+          <h2 className="text-sm font-semibold text-[#ff3b30] mb-3 sm:mb-4">Danger zone</h2>
+          {!deleteConfirm ? (
+            <button onClick={() => setDeleteConfirm(true)}
+              className="flex items-center gap-2 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-[#ff3b30] bg-[#ff3b30]/10 hover:bg-[#ff3b30]/15 transition-all duration-200 active:scale-95">
+              <Trash2 className="w-3.5 h-3.5" strokeWidth={2} />
+              Delete Account
+            </button>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-[#ff3b30]/5 border border-[#ff3b30]/20">
+                <AlertTriangle className="w-4 h-4 text-[#ff3b30] mt-0.5 shrink-0" strokeWidth={2} />
+                <p className="text-xs text-[#86868b] leading-relaxed">
+                  This will permanently delete your account and all saved videos. This cannot be undone.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={async () => {
+                  setDeleteLoading(true);
+                  try {
+                    const res = await fetch("/api/auth/delete-account", { method: "POST" });
+                    if (res.ok) { router.push("/"); }
+                  } catch {} finally { setDeleteLoading(false); }
+                }} disabled={deleteLoading}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#ff3b30] hover:bg-[#ff2d55] transition-all duration-200 disabled:opacity-50 active:scale-95">
+                  {deleteLoading ? (
+                    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full" />
+                  ) : "Confirm Delete"}
+                </button>
+                <button onClick={() => setDeleteConfirm(false)} disabled={deleteLoading}
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#86868b] bg-black/[0.04] hover:bg-black/[0.08] transition-all duration-200 disabled:opacity-50">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </Card>
       </div>
     </div>
