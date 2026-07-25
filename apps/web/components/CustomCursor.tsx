@@ -8,8 +8,18 @@ export const CustomCursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [variant, setVariant] = useState<CursorVariant>("default");
   const [isClicking, setIsClicking] = useState(false);
+  const [isTouch, setIsTouch] = useState(true);
 
   useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    setIsTouch(!mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsTouch(!e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    if (isTouch) return;
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
 
@@ -45,7 +55,7 @@ export const CustomCursor = () => {
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, []);
+  }, [isTouch]);
 
   const getColor = () => {
     if (isClicking) return "#0071e3";
@@ -59,6 +69,8 @@ export const CustomCursor = () => {
     if (variant === "text") return 1.05;
     return 1;
   };
+
+  if (isTouch) return null;
 
   return (
     <div

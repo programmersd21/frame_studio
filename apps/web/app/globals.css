@@ -2,21 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Fonts — CDN only, no OS/system font fallbacks in family lists.
-  SF Pro Display : https://fonts.cdnfonts.com/css/sf-pro-display
-  Plus Jakarta Sans + Instrument Serif + Geist Mono : Google Fonts
-  (both loaded in layout.tsx <head>)
-*/
-
 :root {
-  /* ── Font stacks (CDN fonts only) ──────────────────────── */
   --font-display: "SF Pro Display", "Plus Jakarta Sans", sans-serif;
   --font-sans:    "Plus Jakarta Sans", "SF Pro Display", sans-serif;
   --font-mono:    "Geist Mono", monospace;
   --font-serif:   "Instrument Serif", serif;
 
-  /* ── Palette ───────────────────────────────────────────── */
   --bg:           #f9f9fb;
   --bg-surface:   #ffffff;
   --fg:           #1d1d1f;
@@ -26,23 +17,22 @@
   --dim:          #a1a1a6;
   --blue:         #0071e3;
 
-  /* ── Easing tokens ─────────────────────────────────────── */
-  /* Fast accel + slow smooth decel — on-screen movement     */
   --ease-standard:  cubic-bezier(0.4, 0, 0.2, 1);
-  /* Smooth controlled drift — tactile micro-interactions    */
   --ease-soft:      cubic-bezier(0.22, 1, 0.36, 1);
-  /* Expo out — snap-open drawers, menus, reveals            */
   --ease-expo:      cubic-bezier(0.16, 1, 0.3, 1);
+
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+  --tab-bar-height: 56px;
 }
 
 @layer base {
-  *, *::before, *::after { 
-    box-sizing: border-box;
-    cursor: none !important;
-  }
+  *, *::before, *::after { box-sizing: border-box; }
 
-  input, textarea, select, button, a {
-    cursor: none !important;
+  @media (hover: hover) {
+    *, *::before, *::after { cursor: none !important; }
+    input, textarea, select, button, a { cursor: none !important; }
   }
 
   html { scroll-behavior: smooth; }
@@ -53,13 +43,13 @@
     font-family: var(--font-display);
     overflow-x: hidden;
     min-height: 100vh;
+    min-height: 100dvh;
     letter-spacing: -0.016em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
 
-    /* ── WWDC-style 32 px grid + ambient radial light ─────── */
     background-image:
       linear-gradient(to right,  rgba(0,0,0,0.028) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(0,0,0,0.028) 1px, transparent 1px),
@@ -70,7 +60,10 @@
     background-attachment: fixed;
   }
 
-  /* ── Scrollbar ─────────────────────────────────────────── */
+  /* ── Mobile tap highlights ── */
+  * { -webkit-tap-highlight-color: transparent; }
+
+  /* ── Scrollbar ── */
   ::-webkit-scrollbar              { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track        { background: transparent; }
   ::-webkit-scrollbar-thumb        {
@@ -80,20 +73,23 @@
   }
   ::-webkit-scrollbar-thumb:hover  { background: rgba(0,0,0,0.26); }
 
-  /* ── Selection ─────────────────────────────────────────── */
   ::selection {
     background: rgba(0,113,227,0.13);
     color: var(--blue);
   }
 }
 
-/* ── Utility font classes ───────────────────────────────── */
 .font-display { font-family: var(--font-display); }
 .font-sans    { font-family: var(--font-sans); }
 .font-mono    { font-family: var(--font-mono); }
 .font-serif   { font-family: var(--font-serif); }
 
-/* ── Glass surfaces ─────────────────────────────────────── */
+/* ── PWA: disable text selection on mobile ── */
+@media (hover: none) and (pointer: coarse) {
+  body { -webkit-user-select: none; user-select: none; }
+  input, textarea { -webkit-user-select: text; user-select: text; }
+}
+
 .glass {
   background: rgba(255,255,255,0.72);
   backdrop-filter: blur(32px) saturate(200%);
@@ -127,7 +123,29 @@
     inset 0 1px 0 0 rgba(255,255,255,1);
 }
 
-/* ── Keyframes ──────────────────────────────────────────── */
+/* ── Safe area utilities ── */
+.pt-safe { padding-top: var(--safe-area-top); }
+.pb-safe { padding-bottom: var(--safe-area-bottom); }
+.min-h-screen-d { min-height: 100dvh; }
+
+/* ── Bottom tab bar ── */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: var(--tab-bar-height);
+  padding-bottom: var(--safe-area-bottom);
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-top: 1px solid rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
 @keyframes ambient-glow {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   50%       { opacity: 0.85; transform: scale(1.06); }
@@ -174,50 +192,26 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── Animation helpers ──────────────────────────────────── */
-.animate-ambient-glow {
-  animation: ambient-glow 12s var(--ease-standard) infinite;
-}
-.animate-fade-up {
-  animation: fade-up 0.7s var(--ease-expo) both;
-}
-.animate-fade-in {
-  animation: fade-in 0.5s var(--ease-standard) both;
-}
-.animate-scale-in {
-  animation: scale-in 0.28s var(--ease-soft) both;
-}
-.animate-gradient {
-  animation: gradient-shift 8s var(--ease-soft) infinite;
-}
-.animate-gradient-prominent {
-  animation: gradient-prominent 4s linear infinite;
-}
-.animate-float {
-  animation: float 6s var(--ease-soft) infinite;
-}
-.animate-breathe {
-  animation: breathe 4s var(--ease-soft) infinite;
-}
-.animate-soft-glow {
-  animation: soft-glow 3s var(--ease-soft) infinite;
-}
-.animate-slide-up-reveal {
-  animation: slide-up-reveal 0.6s var(--ease-expo) both;
-}
+.animate-ambient-glow      { animation: ambient-glow 12s var(--ease-standard) infinite; }
+.animate-fade-up           { animation: fade-up 0.7s var(--ease-expo) both; }
+.animate-fade-in           { animation: fade-in 0.5s var(--ease-standard) both; }
+.animate-scale-in          { animation: scale-in 0.28s var(--ease-soft) both; }
+.animate-gradient          { animation: gradient-shift 8s var(--ease-soft) infinite; }
+.animate-gradient-prominent { animation: gradient-prominent 4s linear infinite; }
+.animate-float             { animation: float 6s var(--ease-soft) infinite; }
+.animate-breathe           { animation: breathe 4s var(--ease-soft) infinite; }
+.animate-soft-glow         { animation: soft-glow 3s var(--ease-soft) infinite; }
+.animate-slide-up-reveal   { animation: slide-up-reveal 0.6s var(--ease-expo) both; }
 
-/* ── Custom select dropdown open animation ──────────────── */
 select option {
   font-family: var(--font-sans);
   background: #ffffff;
   color: #1d1d1f;
 }
 
-/* ── Textarea placeholder refinement ────────────────────── */
 textarea::placeholder {
   transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
 textarea:focus::placeholder {
   opacity: 0.35;
 }

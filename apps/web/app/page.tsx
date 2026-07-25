@@ -83,12 +83,12 @@ export default function HomePage() {
       {isLoading && <ProgressScreen stage={progressStage} percent={progressPercent} onClose={() => setIsLoading(false)} />}
       {preview && <PreviewScreen videoUrl={preview.url} filename={preview.filename} prompt={preview.prompt} model={preview.model} onClose={handleClosePreview} />}
 
-      <div className="px-6 py-16 md:py-28 flex flex-col items-center justify-center min-h-[calc(100vh-120px)] relative z-10">
-        <div className="w-full max-w-4xl mx-auto space-y-16 text-center">
+      <div className="px-4 sm:px-6 py-12 sm:py-16 md:py-28 flex flex-col items-center justify-center min-h-[calc(100dvh-120px)] relative z-10">
+        <div className="w-full max-w-4xl mx-auto space-y-10 sm:space-y-16 text-center">
           {/* Hero */}
-          <div className="space-y-6 max-w-3xl mx-auto flex flex-col items-center">
+          <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto flex flex-col items-center">
             <Reveal delay={0.1}>
-              <h1 className="text-[clamp(2rem,7vw,6rem)] sm:text-7xl md:text-8xl font-semibold tracking-[-0.03em] leading-[0.92]">
+              <h1 className="text-[clamp(2rem,9vw,6rem)] sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-[-0.03em] leading-[0.92] px-2">
                 <span
                   className="bg-clip-text text-transparent animate-gradient-prominent"
                   style={{
@@ -109,7 +109,7 @@ export default function HomePage() {
             </Reveal>
 
             <Reveal delay={0.2}>
-              <p className="text-lg sm:text-xl text-[#86868b] font-normal leading-relaxed max-w-xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-[#86868b] font-normal leading-relaxed max-w-xl mx-auto px-2">
                 Enterprise-grade video generation powered by Google Gemini.
                 Write a prompt, get production-ready MP4s in seconds.
               </p>
@@ -117,7 +117,7 @@ export default function HomePage() {
 
             <Reveal delay={0.3}>
               <motion.div
-                className="flex items-center justify-center gap-5 sm:gap-8 text-sm pt-2"
+                className="flex flex-wrap items-center justify-center gap-3 sm:gap-8 text-xs sm:text-sm pt-2"
                 whileHover="hover"
               >
                 {[
@@ -147,7 +147,7 @@ export default function HomePage() {
 
           {/* Prompt Box */}
           <Reveal delay={0.4}>
-            <div className="w-full">
+            <div className="w-full px-0 sm:px-4">
               <PromptBox onGenerate={handleGenerate} isLoading={isLoading} />
             </div>
           </Reveal>

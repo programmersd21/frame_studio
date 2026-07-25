@@ -5,10 +5,10 @@ import { Github, Sparkles } from "lucide-react";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="relative z-10 w-full mt-32">
-      <div className="mx-auto max-w-4xl px-6">
+    <footer className="relative z-10 w-full mt-16 sm:mt-32 mb-16 md:mb-0">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <div
-          className="rounded-2xl px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+          className="rounded-xl sm:rounded-2xl px-4 sm:px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4"
           style={{
             background: "rgba(255,255,255,0.5)",
             backdropFilter: "blur(16px)",
@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <Sparkles className="w-4 h-4" style={{ color: "#0071e3" }} strokeWidth={1.5} />
             <span className="text-xs font-medium text-[#86868b] font-sans">
-              Frame Studio &mdash; AI-powered motion graphics
+              Frame Studio &mdash; AI motion graphics
             </span>
           </div>
 

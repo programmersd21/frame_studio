@@ -63,48 +63,46 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="px-6 py-16 md:py-24 max-w-4xl mx-auto">
-      {/* Header */}
+    <div className="px-4 sm:px-6 py-6 sm:py-12 md:py-24 max-w-4xl mx-auto pb-20 md:pb-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: SOFT }}
-        className="flex items-start justify-between mb-10"
+        className="flex items-start justify-between mb-6 sm:mb-10"
       >
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-8 rounded-full bg-[#0071e3]/10 flex items-center justify-center">
-              <User className="w-4 h-4 text-[#0071e3]" strokeWidth={1.5} />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0071e3]/10 flex items-center justify-center">
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0071e3]" strokeWidth={1.5} />
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">Profile</h1>
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#1d1d1f]">Profile</h1>
           </div>
-          <p className="text-sm text-[#86868b] mt-1">
+          <p className="text-xs sm:text-sm text-[#86868b] mt-1">
             {user?.email || "Loading..."}
           </p>
         </div>
         <a
           href="/auth/signout"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-[#86868b] hover:text-[#ff3b30] hover:bg-[#ff3b30]/10 transition-all duration-200"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-medium text-[#86868b] hover:text-[#ff3b30] hover:bg-[#ff3b30]/10 transition-all duration-200"
         >
           <LogOut className="w-3.5 h-3.5" strokeWidth={1.5} />
-          Sign out
+          <span className="hidden sm:inline">Sign out</span>
         </a>
       </motion.div>
 
-      {/* Videos */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.6, ease: SOFT }}
       >
-        <div className="flex items-center gap-2.5 mb-5">
+        <div className="flex items-center gap-2.5 mb-4 sm:mb-5">
           <Video className="w-4 h-4 text-[#0071e3]" strokeWidth={1.5} />
           <h2 className="text-sm font-semibold tracking-tight text-[#1d1d1f]">Your videos</h2>
           <span className="text-xs text-[#a1a1a6] font-mono">{videos.length}</span>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center justify-center py-16 sm:py-20">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
@@ -113,7 +111,7 @@ export default function ProfilePage() {
           </div>
         ) : videos.length === 0 ? (
           <div
-            className="rounded-2xl px-8 py-16 text-center"
+            className="rounded-2xl px-6 sm:px-8 py-12 sm:py-16 text-center"
             style={{
               background: "rgba(255,255,255,0.5)",
               border: "1px solid rgba(0,0,0,0.05)",
@@ -126,7 +124,7 @@ export default function ProfilePage() {
             <p className="text-xs text-[#a1a1a6] mt-1">Generate your first video to see it here.</p>
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all duration-200"
+              className="inline-flex items-center gap-1.5 mt-4 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all duration-200 active:scale-95"
               style={{ boxShadow: "0 4px 14px rgba(0,113,227,0.25)" }}
             >
               <Sparkles className="w-3 h-3" strokeWidth={2} />
@@ -134,14 +132,14 @@ export default function ProfilePage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {videos.map((video, i) => (
               <motion.div
                 key={video.id}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.05, duration: 0.5, ease: SOFT }}
-                className="rounded-2xl overflow-hidden"
+                className="rounded-xl sm:rounded-2xl overflow-hidden"
                 style={{
                   background: "rgba(255,255,255,0.68)",
                   border: "1px solid rgba(0,0,0,0.05)",
@@ -157,11 +155,11 @@ export default function ProfilePage() {
                     style={{ background: "#000" }}
                   />
                 </div>
-                <div className="p-4">
+                <div className="p-3 sm:p-4">
                   <p className="text-xs font-medium text-[#1d1d1f] line-clamp-2 leading-relaxed">
                     {video.prompt || "Untitled"}
                   </p>
-                  <div className="flex items-center justify-between mt-2.5">
+                  <div className="flex items-center justify-between mt-2 sm:mt-2.5">
                     <div className="flex items-center gap-2 text-[10px] text-[#a1a1a6] font-mono">
                       <Clock className="w-3 h-3" strokeWidth={1.5} />
                       {formatDate(video.created_at)}
