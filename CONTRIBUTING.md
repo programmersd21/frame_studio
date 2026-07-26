@@ -1,57 +1,46 @@
-# Contributing to Frame Studio
+# Contributing
 
-## Project Structure
+Thank you for your interest in contributing.
 
-```
-apps/web/                  Next.js 15 app (Vercel)
-├── app/api/generate/route.ts    AI pipeline + compile endpoint
-├── app/page.tsx                 Client UI + browser render trigger
-├── components/                  UI components
-├── lib/
-│   ├── compile.ts               Server: TS check + TSX→JS via esbuild
-│   ├── renderInBrowser.ts       Client: evaluates compiled code + renders MP4
-│   └── apiKey.ts                API key cookie helpers
-packages/pipeline/               Shared AI pipeline (plan, codegen, fix)
-packages/remotion-skeleton/      Template Remotion canvas project
-```
+## Before You Start
 
-## Architecture
+* Read the project documentation.
+* Search existing issues and pull requests before opening a new one.
+* Keep changes focused on a single purpose.
 
-- **Server** (Next.js API route, runs on Vercel free tier):
-  1. Plan: Gemini creates video structure from prompt
-  2. Codegen: Gemini writes React/Remotion code
-  3. Compile: TypeScript validation + fix loop (up to 3 retries)
-  4. esbuild transforms TSX→JS (CJS format)
-  5. Returns `{ compiledFiles, metadata }` as JSON
+## Reporting Issues
 
-- **Client** (Browser, no server needed for render):
-  1. Receives compiled CJS code
-  2. Evaluates via `new Function()` with a custom `require()` shim
-  3. `@remotion/web-renderer` renders MP4 using WebCodecs API
-  4. Downloads directly — no queue, no infrastructure
+When reporting a bug, include:
 
-## Import Safety
+* A clear description of the problem.
+* Steps to reproduce it.
+* The expected behavior.
+* Relevant environment details, if applicable.
 
-Generated code may **only** import from:
-- `remotion`
-- `react`
-- `react-dom`
-- `@remotion/google-fonts` (and subpaths like `@remotion/google-fonts/Inter`)
-- Relative files (`./Scene1`, `../helpers`, etc.)
+## Submitting Changes
 
-The server rejects any code with disallowed imports. This is enforced by `validateStaticImports()` in `lib/compile.ts`.
+1. Fork the repository.
+2. Create a new branch for your change.
+3. Make your changes.
+4. Test your changes if applicable.
+5. Open a pull request with a clear description of what changed and why.
 
-## Client-Side Module Resolution
+## Code Style
 
-The generated code is compiled to CJS by esbuild on the server. On the client, `renderInBrowser.ts` provides a CJS shim:
+* Follow the existing style and conventions.
+* Keep code readable and consistent.
+* Avoid unrelated changes in the same pull request.
 
-- `require("remotion")` → maps to the actual `remotion` module (imported in the page)
-- `require("./Scene1")` → resolves to `src/Scene1.tsx` in the compiled files map
-- `require("@remotion/google-fonts/Inter")` → shim that returns `{ fontFamily: "Inter" }`
+## Commit Messages
 
-## PR Checklist
+Write clear, concise commit messages that describe the change.
 
-1. `pnpm build` — full production build must pass
-2. `pnpm dev` — dev server must start without errors
-3. No stale references to old render-worker, Lambda, or RENDER_WORKER_URL
-4. Verify browser rendering works in Chrome 94+ / Firefox 130+
+## Pull Requests
+
+Please ensure that your pull request:
+
+* Has a clear title and description.
+* References related issues when appropriate.
+* Is ready for review.
+
+Constructive feedback is welcome. Thank you for helping improve the project.
