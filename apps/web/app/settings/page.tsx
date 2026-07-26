@@ -15,9 +15,6 @@ export default function SettingsPage() {
   const [name, setName] = useState("");
   const [nameSaved, setNameSaved] = useState(false);
   const [email, setEmail] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [emailLoading, setEmailLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -72,14 +69,6 @@ export default function SettingsPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.updateUser({ data: { full_name: name } });
     if (!error) { setNameSaved(true); setTimeout(() => setNameSaved(false), 2000); }
-  };
-
-  const sendEmailChange = async () => {
-    setEmailLoading(true); setEmailSent(false);
-    const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({ email: newEmail });
-    setEmailLoading(false);
-    if (!error) setEmailSent(true);
   };
 
   const changePassword = async (e: React.FormEvent) => {
@@ -188,23 +177,6 @@ export default function SettingsPage() {
               className="flex items-center gap-1.5 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all duration-200 active:scale-95"
               style={{ boxShadow: "0 4px 14px rgba(0,113,227,0.25)" }}>
               {nameSaved ? <><Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Saved</> : "Save"}
-            </button>
-          </div>
-        </Card>
-
-        <Card delay={0.2}>
-          <h2 className="text-sm font-semibold text-[#1d1d1f] mb-3 sm:mb-4">Email</h2>
-          <p className="text-xs text-[#86868b] mb-3">Current: <span className="text-[#1d1d1f] font-medium">{email}</span></p>
-          <label className="block text-xs font-medium text-[#6e6e73] mb-1.5 tracking-tight">New email</label>
-          <Input icon={Mail} type="email" value={newEmail} onChange={(e: any) => setNewEmail(e.target.value)} placeholder="new@example.com" />
-          {emailSent && <p className="mt-2 text-xs text-[#34c759] font-medium">Confirmation email sent.</p>}
-          <div className="mt-3 flex justify-end">
-            <button onClick={sendEmailChange} disabled={emailLoading || !newEmail}
-              className="flex items-center gap-1.5 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all duration-200 disabled:opacity-50 active:scale-95"
-              style={{ boxShadow: "0 4px 14px rgba(0,113,227,0.25)" }}>
-              {emailLoading ? (
-                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full" />
-              ) : "Change Email"}
             </button>
           </div>
         </Card>
