@@ -11,7 +11,7 @@ import { renderVideoInBrowser } from "@/lib/renderInBrowser";
 import { Material3Decorations } from "@/components/Material3Decorations";
 import { HeroGlow } from "@/components/HeroGlow";
 import { BentoFeatures } from "@/components/BentoFeatures";
-import { VideoMarquee } from "@/components/VideoMarquee";
+
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -124,12 +124,8 @@ export default function HomePage() {
             </Reveal>
           </div>
 
-          <Reveal delay={0.35}>
-            <VideoMarquee />
-          </Reveal>
-
           {/* Prompt Box */}
-          <Reveal delay={0.4}>
+          <Reveal delay={0.35}>
             <div className="w-full px-0 sm:px-4">
               <PromptBox onGenerate={handleGenerate} isLoading={isLoading} />
             </div>
