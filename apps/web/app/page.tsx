@@ -9,7 +9,6 @@ import { ProgressScreen } from "@/components/ProgressScreen";
 import { PreviewScreen } from "@/components/PreviewScreen";
 import { renderVideoInBrowser } from "@/lib/renderInBrowser";
 import { Material3Decorations } from "@/components/Material3Decorations";
-import { TypingHeading } from "@/components/TypingHeading";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -87,10 +86,21 @@ export default function HomePage() {
       <div className="px-4 sm:px-6 py-12 sm:py-16 md:py-28 flex flex-col items-center justify-center min-h-[calc(100dvh-120px)] relative z-10">
         <div className="w-full max-w-4xl mx-auto space-y-10 sm:space-y-16 text-center">
           {/* Hero */}
-          <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto flex flex-col items-center">
+          <div className="space-y-6 sm:space-y-8 max-w-3xl mx-auto flex flex-col items-center">
             <Reveal delay={0.1}>
-              <h1 className="text-[clamp(2rem,9vw,6rem)] sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-[-0.03em] leading-[0.92] px-2">
-                <TypingHeading />
+              <h1 className="text-[clamp(2.2rem,8vw,5.5rem)] sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-[-0.025em] leading-[1.05] px-4 sm:px-8">
+                <span
+                  className="bg-clip-text text-transparent animate-gradient-prominent"
+                  style={{
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundSize: "200% 100%",
+                    backgroundImage:
+                      "linear-gradient(270deg, #ff2d55 0%, #ff9f0a 17%, #bf5af2 33%, #0071e3 50%, #34e0a4 67%, #ff2d55 100%)",
+                  }}
+                >
+                  Motion graphics
+                </span>
                 <br />
                 <span className="font-serif italic font-semibold text-[#1d1d1f]">
                   from a prompt.
@@ -99,7 +109,7 @@ export default function HomePage() {
             </Reveal>
 
             <Reveal delay={0.2}>
-              <p className="text-base sm:text-lg md:text-xl text-[#86868b] font-normal leading-relaxed max-w-xl mx-auto px-2">
+              <p className="text-base sm:text-lg md:text-xl text-[#86868b] font-normal leading-relaxed max-w-lg mx-auto px-4">
                 Enterprise-grade video generation powered by Google Gemini.
                 Write a prompt, get production-ready MP4s in seconds.
               </p>
@@ -107,7 +117,7 @@ export default function HomePage() {
 
             <Reveal delay={0.3}>
               <motion.div
-                className="flex flex-wrap items-center justify-center gap-3 sm:gap-8 text-xs sm:text-sm pt-2"
+                className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm pt-1"
                 whileHover="hover"
               >
                 {[
@@ -133,6 +143,19 @@ export default function HomePage() {
                 ))}
               </motion.div>
             </Reveal>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center justify-center gap-3 sm:gap-4">
+            <div className="h-px flex-1 max-w-[120px]" style={{
+              background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06))"
+            }} />
+            <div className="w-1.5 h-1.5 rounded-full rotate-45 shrink-0" style={{
+              background: "linear-gradient(135deg, rgba(0,113,227,0.25), rgba(191,90,242,0.25))"
+            }} />
+            <div className="h-px flex-1 max-w-[120px]" style={{
+              background: "linear-gradient(270deg, transparent, rgba(0,0,0,0.06))"
+            }} />
           </div>
 
           {/* Prompt Box */}
