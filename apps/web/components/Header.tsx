@@ -66,10 +66,10 @@ export const Header: React.FC = () => {
           top: scrolled ? "12px" : "24px",
           fontFamily: "var(--font-display)",
           padding: scrolled ? "8px 20px" : "12px 24px",
-          background: scrolled ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0.68)",
-          backdropFilter: scrolled ? "blur(40px) saturate(200%)" : "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: scrolled ? "blur(40px) saturate(200%)" : "blur(24px) saturate(180%)",
-          border: "1px solid rgba(0,0,0,0.07)",
+          background: scrolled ? "rgba(249,250,251,0.72)" : "rgba(249,250,251,0.62)",
+          backdropFilter: scrolled ? "blur(40px) saturate(185%)" : "blur(24px) saturate(170%)",
+          WebkitBackdropFilter: scrolled ? "blur(40px) saturate(185%)" : "blur(24px) saturate(170%)",
+          border: "1px solid rgba(255,255,255,0.12)",
           boxShadow: scrolled
             ? "0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 0 rgba(255,255,255,0.9)"
             : "0 4px 16px rgba(0,0,0,0.03), inset 0 1px 0 0 rgba(255,255,255,0.9)",

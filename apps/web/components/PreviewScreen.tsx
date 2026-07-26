@@ -64,8 +64,7 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
       animate={{ opacity: isClosing ? 0 : 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35, ease: SOFT }}
-      className="fixed inset-0 z-[999] flex items-center justify-center"
-      style={{ background: "rgba(249,249,251,0.8)", backdropFilter: "blur(40px)" }}
+      className="fixed inset-0 z-[999] flex items-center justify-center lg-overlay"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
       <motion.div
@@ -75,11 +74,9 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
         className="w-[calc(100%-2rem)] max-w-lg"
       >
         <div
-          className="rounded-2xl sm:rounded-3xl overflow-hidden"
+          className="rounded-2xl sm:rounded-3xl overflow-hidden lg-card"
           style={{
-            background: "rgba(255,255,255,0.95)",
-            backdropFilter: "blur(40px) saturate(200%)",
-            boxShadow: "0 24px 80px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04)",
+            background: "rgba(249,250,251,0.85)",
           }}
         >
           {/* Header */}

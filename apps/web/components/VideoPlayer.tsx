@@ -297,7 +297,8 @@ export const VideoPlayer = ({ src, autoPlay = false, className = "" }: VideoPlay
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center cursor-pointer"
               style={{
                 background: "rgba(255,255,255,0.12)",
-                backdropFilter: "blur(12px)",
+                backdropFilter: "blur(16px) saturate(180%)",
+                WebkitBackdropFilter: "blur(16px) saturate(180%)",
               }}
             >
               <Play className="w-7 h-7 sm:w-8 sm:h-8 text-white ml-1" fill="white" strokeWidth={0} />

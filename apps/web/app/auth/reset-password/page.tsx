@@ -62,14 +62,8 @@ export default function ResetPasswordPage() {
         className="w-full max-w-sm"
       >
         <div
-          className="rounded-2xl sm:rounded-3xl overflow-hidden"
-          style={{
-            background: "rgba(255,255,255,0.85)",
-            backdropFilter: "blur(40px) saturate(200%)",
-            WebkitBackdropFilter: "blur(40px) saturate(200%)",
-            border: "1px solid rgba(255,255,255,0.5)",
-            boxShadow: "0 24px 80px rgba(0,0,0,0.07), 0 1px 0 0 rgba(255,255,255,0.85) inset",
-          }}
+          className="rounded-2xl sm:rounded-3xl overflow-hidden lg-card"
+          style={{ background: "rgba(249,250,251,0.82)" }}
         >
           <div className="px-5 sm:px-8 pt-6 sm:pt-8 pb-5 sm:pb-6">
             {success ? (

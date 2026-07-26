@@ -127,8 +127,8 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
           }}
         >
           <div
-            className="relative rounded-[calc(1rem-1.5px)] px-6 pt-6 pb-5"
-            style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(32px)" }}
+            className="relative rounded-[calc(1rem-1.5px)] px-6 pt-6 pb-5 lg"
+            style={{ background: "rgba(249,250,251,0.82)" }}
           >
             <div className="relative">
               <div className="relative">
@@ -226,7 +226,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                           fontFamily: "var(--font-sans)",
                           transformOrigin: "bottom left",
                         }}
-                        className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-52 rounded-xl overflow-hidden bg-white/95 backdrop-blur-2xl border border-black/[0.07] shadow-[0_16px_40px_rgba(0,0,0,0.10),0_1px_0_rgba(255,255,255,0.9)_inset]"
+                        className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-52 rounded-xl overflow-hidden lg shadow-[0_16px_40px_rgba(0,0,0,0.10),0_1px_0_rgba(255,255,255,0.9)_inset]"
                       >
                         {GEMINI_MODELS.map((model, i) => (
                           <motion.button

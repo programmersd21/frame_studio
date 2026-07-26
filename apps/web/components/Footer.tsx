@@ -8,11 +8,8 @@ export const Footer: React.FC = () => {
     <footer className="relative z-10 w-full mt-16 sm:mt-32 mb-16 md:mb-0">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <div
-          className="rounded-xl sm:rounded-2xl px-4 sm:px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4"
+          className="rounded-xl sm:rounded-2xl px-4 sm:px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 lg-thin"
           style={{
-            background: "rgba(255,255,255,0.5)",
-            backdropFilter: "blur(16px)",
-            border: "1px solid rgba(0,0,0,0.05)",
             boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.9)",
           }}
         >

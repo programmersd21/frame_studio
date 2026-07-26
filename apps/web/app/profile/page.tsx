@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { LogOut, Video, Clock, Trash2, ExternalLink, Sparkles, User, Copy, Check, Film } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { VideoPlayer } from "@/components/VideoPlayer";
+import { LiquidGlass } from "@/components/LiquidGlass";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -86,13 +87,8 @@ export default function ProfilePage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20, mass: 0.6 }}
-        className="rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-8"
-        style={{
-          background: "rgba(255,255,255,0.78)",
-          backdropFilter: "blur(40px) saturate(200%)",
-          border: "1px solid rgba(255,255,255,0.5)",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.07), 0 10px 32px rgba(0,0,0,0.03), 0 1px 0 0 rgba(255,255,255,0.85) inset",
-        }}
+        className="rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-8 lg-card"
+        style={{ background: "rgba(249,250,251,0.78)" }}
       >
         <div className="px-5 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
           <div className="flex items-start justify-between">
@@ -194,11 +190,8 @@ export default function ProfilePage() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl sm:rounded-3xl px-6 sm:px-8 py-14 sm:py-16 text-center"
-            style={{
-              background: "rgba(255,255,255,0.5)",
-              border: "1px solid rgba(0,0,0,0.05)",
-            }}
+            className="rounded-2xl sm:rounded-3xl px-6 sm:px-8 py-14 sm:py-16 text-center lg-thin"
+            style={{ background: "rgba(249,250,251,0.48)" }}
           >
             <motion.div
               animate={{ y: [0, -6, 0] }}
@@ -228,12 +221,8 @@ export default function ProfilePage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: i * 0.04, type: "spring", stiffness: 100, damping: 20, mass: 0.6 }}
-                className="group rounded-xl sm:rounded-2xl overflow-hidden"
-                style={{
-                  background: "rgba(255,255,255,0.72)",
-                  border: "1px solid rgba(0,0,0,0.05)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.03), inset 0 1px 0 0 rgba(255,255,255,0.9)",
-                }}
+                className="group rounded-xl sm:rounded-2xl overflow-hidden lg-card"
+                style={{ background: "rgba(249,250,251,0.72)" }}
               >
                 <div className="aspect-video bg-black relative">
                   <VideoPlayer src={video.video_url} className="w-full h-full" />

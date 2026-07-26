@@ -46,12 +46,7 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
       animate={{ opacity: isClosing ? 0 : 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: SOFT }}
-      className="fixed inset-0 z-[999] flex items-center justify-center p-6 overflow-hidden"
-      style={{
-        background: "rgba(249,249,251,0.65)",
-        backdropFilter: "blur(60px) saturate(180%)",
-        WebkitBackdropFilter: "blur(60px) saturate(180%)",
-      }}
+      className="fixed inset-0 z-[999] flex items-center justify-center p-6 overflow-hidden lg-overlay"
     >
       {orbs.map((orb, i) => (
         <motion.div
@@ -96,14 +91,9 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
         className="w-full max-w-sm relative"
       >
         <div
-          className="rounded-3xl overflow-hidden relative"
+          className="rounded-3xl overflow-hidden relative lg-card"
           style={{
-            background: "rgba(255,255,255,0.82)",
-            backdropFilter: "blur(40px) saturate(200%)",
-            WebkitBackdropFilter: "blur(40px) saturate(200%)",
-            border: "1px solid rgba(255,255,255,0.5)",
-            boxShadow:
-              "0 24px 80px rgba(0,0,0,0.07), 0 10px 32px rgba(0,0,0,0.03), 0 1px 0 0 rgba(255,255,255,0.85) inset, 0 0 0 1px rgba(0,0,0,0.04)",
+            background: "rgba(249,250,251,0.78)",
           }}
         >
           {onClose && (

@@ -13,13 +13,8 @@ const Card = ({ children, delay = 0, className = "" }: { children: React.ReactNo
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, type: "spring", stiffness: 100, damping: 20, mass: 0.6 }}
-    className={`rounded-2xl sm:rounded-3xl overflow-hidden ${className}`}
-    style={{
-      background: "rgba(255,255,255,0.78)",
-      backdropFilter: "blur(40px) saturate(200%)",
-      border: "1px solid rgba(255,255,255,0.5)",
-      boxShadow: "0 24px 80px rgba(0,0,0,0.07), 0 10px 32px rgba(0,0,0,0.03), 0 1px 0 0 rgba(255,255,255,0.85) inset",
-    }}
+    className={`rounded-2xl sm:rounded-3xl overflow-hidden lg-card ${className}`}
+    style={{ background: "rgba(249,250,251,0.78)" }}
   >
     <div className="px-5 sm:px-8 py-5 sm:py-6">{children}</div>
   </motion.div>

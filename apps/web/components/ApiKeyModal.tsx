@@ -88,8 +88,7 @@ export function ApiKeyModal({ onApiKeySet }: ApiKeyModalProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: SOFT }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-6"
-          style={{ background: "rgba(249,249,251,0.7)", backdropFilter: "blur(48px)" }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 lg-overlay"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
@@ -99,12 +98,9 @@ export function ApiKeyModal({ onApiKeySet }: ApiKeyModalProps) {
             className="w-full max-w-md"
           >
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden lg-card"
               style={{
-                background: "rgba(255,255,255,0.88)",
-                backdropFilter: "blur(32px)",
-                border: "1px solid rgba(0,0,0,0.07)",
-                boxShadow: "0 24px 80px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04), inset 0 1px 0 0 rgba(255,255,255,0.95)",
+                background: "rgba(249,250,251,0.82)",
               }}
             >
               <div className="px-7 pt-7 pb-2">
