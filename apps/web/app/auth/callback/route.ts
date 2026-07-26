@@ -1,57 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-function makeClient(supabaseUrl: string, supabaseKey: string) {
-  const storageKey =
-    `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
-
-  const cookieStore = cookies();
-
-  const storage = {
-    getItem: async (key: string) => {
-      const c = (await cookieStore).get(key);
-      return c?.value ?? null;
-    },
-    setItem: async (key: string, value: string) => {
-      try {
-        (await cookieStore).set(key, value, {
-          path: "/",
-          httpOnly: true,
-          sameSite: "lax",
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 24 * 365,
-        });
-      } catch {}
-    },
-    removeItem: async (key: string) => {
-      try {
-        (await cookieStore).set(key, "", { path: "/", maxAge: 0 });
-      } catch {}
-    },
-  };
-
-  return createClient(supabaseUrl, supabaseKey, {
-    global: {
-      fetch: async (input, init) => {
-        const headers = new Headers(init?.headers);
-        if (!headers.has("apikey")) {
-          headers.set("apikey", supabaseKey);
-        }
-        return fetch(input, { ...init, headers });
-      },
-    },
-    auth: {
-      storageKey,
-      storage,
-      autoRefreshToken: false,
-      persistSession: true,
-      detectSessionInUrl: false,
-      skipAutoInitialize: true,
-      flowType: "pkce",
-    },
-  });
-}
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -73,11 +21,31 @@ export async function GET(request: Request) {
     );
   }
 
+  const storageKey =
+    `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
+
+  const cookieOptions = {
+    path: "/",
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 24 * 365,
+  };
+
   if (code) {
-    const supabase = makeClient(supabaseUrl, supabaseKey);
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error && session) {
+      const response = NextResponse.redirect(`${origin}${next}`);
+      response.cookies.set(
+        storageKey,
+        JSON.stringify(session),
+        cookieOptions,
+      );
+      return response;
     }
     return NextResponse.redirect(
       `${origin}/auth/signin?error=auth_callback_error`,
@@ -85,16 +53,25 @@ export async function GET(request: Request) {
   }
 
   if (token_hash && type) {
-    const supabase = makeClient(supabaseUrl, supabaseKey);
-    const { error } = await supabase.auth.verifyOtp({
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.verifyOtp({
       token_hash,
       type: type as any,
     });
-    if (!error) {
-      if (type === "recovery") {
-        return NextResponse.redirect(`${origin}/auth/reset-password`);
-      }
-      return NextResponse.redirect(`${origin}${next}`);
+
+    if (!error && session) {
+      const redirectUrl =
+        type === "recovery" ? "/auth/reset-password" : next;
+      const response = NextResponse.redirect(`${origin}${redirectUrl}`);
+      response.cookies.set(
+        storageKey,
+        JSON.stringify(session),
+        cookieOptions,
+      );
+      return response;
     }
     return NextResponse.redirect(
       `${origin}/auth/signin?error=verification_failed`,
