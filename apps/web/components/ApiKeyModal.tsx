@@ -153,7 +153,7 @@ export function ApiKeyModal({ onApiKeySet }: ApiKeyModalProps) {
                           type={showKey ? "text" : "password"}
                           value={apiKey}
                           onChange={(e) => setApiKey(e.target.value)}
-                          placeholder="AIzaSy..."
+                          placeholder="AQ.Ab8RN6KyIBPQXn_g9L0RBN4rhi..."
                           autoFocus
                           className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#a1a1a6] outline-none focus:outline-none focus:ring-0 px-4 py-3 pr-12 font-mono tracking-tight"
                         />

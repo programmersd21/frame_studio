@@ -13,9 +13,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Basic validation: check if it looks like a Gemini API key
-    if (!apiKey.startsWith("AIza") || apiKey.length < 30) {
+    if (!(apiKey.startsWith("AIza") || apiKey.startsWith("AQ")) || apiKey.length < 30) {
       return NextResponse.json(
-        { error: "Invalid API key format. Gemini API keys start with 'AIza'." },
+        { error: "Invalid API key format. Gemini API keys start with 'AIza' or 'AQ'." },
         { status: 400 }
       );
     }
