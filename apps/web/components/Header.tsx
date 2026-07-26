@@ -77,6 +77,7 @@ export const Header: React.FC = () => {
         }}
       >
         <Link href="/" className="flex items-center gap-2 group">
+          <img src="/icon.svg" alt="" className="shrink-0 rounded-md" style={{ height: scrolled ? "18px" : "22px", width: scrolled ? "18px" : "22px", transition: "all 0.4s cubic-bezier(0.22, 1, 0.36, 1)" }} />
           <span
             className="font-semibold tracking-tight text-[#1d1d1f]"
             style={{ fontSize: scrolled ? "13px" : "15px", transition: "font-size 0.4s cubic-bezier(0.22, 1, 0.36, 1)" }}
