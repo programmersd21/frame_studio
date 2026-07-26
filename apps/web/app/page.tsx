@@ -9,6 +9,7 @@ import { ProgressScreen } from "@/components/ProgressScreen";
 import { PreviewScreen } from "@/components/PreviewScreen";
 import { renderVideoInBrowser } from "@/lib/renderInBrowser";
 import { Material3Decorations } from "@/components/Material3Decorations";
+import { TypingHeading } from "@/components/TypingHeading";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -89,18 +90,7 @@ export default function HomePage() {
           <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto flex flex-col items-center">
             <Reveal delay={0.1}>
               <h1 className="text-[clamp(2rem,9vw,6rem)] sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-[-0.03em] leading-[0.92] px-2">
-                <span
-                  className="bg-clip-text text-transparent animate-gradient-prominent"
-                  style={{
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundSize: "200% 100%",
-                    backgroundImage:
-                      "linear-gradient(270deg, #ff2d55 0%, #ff9f0a 17%, #bf5af2 33%, #0071e3 50%, #34e0a4 67%, #ff2d55 100%)",
-                  }}
-                >
-                  Motion graphics
-                </span>
+                <TypingHeading />
                 <br />
                 <span className="font-serif italic font-semibold text-[#1d1d1f]">
                   from a prompt.

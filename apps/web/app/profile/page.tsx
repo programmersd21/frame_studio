@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Video, Clock, Trash2, ExternalLink, Sparkles, User } from "lucide-react";
+import { LogOut, Video, Clock, Trash2, ExternalLink, Sparkles, User, Copy, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { VideoPlayer } from "@/components/VideoPlayer";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -25,6 +26,15 @@ export default function ProfilePage() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopyPrompt = async (id: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 1800);
+    } catch {}
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -150,7 +160,7 @@ export default function ProfilePage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.05, duration: 0.5, ease: SOFT }}
-                className="rounded-xl sm:rounded-2xl overflow-hidden"
+                className="rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5"
                 style={{
                   background: "rgba(255,255,255,0.68)",
                   border: "1px solid rgba(0,0,0,0.05)",
@@ -158,18 +168,26 @@ export default function ProfilePage() {
                 }}
               >
                 <div className="aspect-video bg-black/[0.03] relative">
-                  <video
-                    src={video.video_url}
-                    controls
-                    preload="metadata"
-                    className="w-full h-full object-contain"
-                    style={{ background: "#000" }}
-                  />
+                  <VideoPlayer src={video.video_url} className="w-full h-full" />
                 </div>
                 <div className="p-3 sm:p-4">
-                  <p className="text-xs font-medium text-[#1d1d1f] line-clamp-2 leading-relaxed">
-                    {video.prompt || "Untitled"}
-                  </p>
+                  <div className="flex items-start gap-2">
+                    <p className="flex-1 text-xs font-medium text-[#1d1d1f] line-clamp-2 leading-relaxed min-w-0">
+                      {video.prompt || "Untitled"}
+                    </p>
+                    {video.prompt && (
+                      <button
+                        onClick={() => handleCopyPrompt(video.id, video.prompt)}
+                        className="shrink-0 mt-0.5 p-1.5 rounded-lg text-[#86868b] hover:text-[#0071e3] hover:bg-[#0071e3]/10 transition-all duration-200 active:scale-90"
+                      >
+                        {copiedId === video.id ? (
+                          <Check className="w-3.5 h-3.5 text-[#34c759]" strokeWidth={2} />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" strokeWidth={1.5} />
+                        )}
+                      </button>
+                    )}
+                  </div>
                   <div className="flex items-center justify-between mt-2 sm:mt-2.5">
                     <div className="flex items-center gap-2 text-[10px] text-[#a1a1a6] font-mono">
                       <Clock className="w-3 h-3" strokeWidth={1.5} />

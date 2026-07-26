@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Download, X, Check, Cloud } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { VideoPlayer } from "@/components/VideoPlayer";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -95,17 +96,12 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
           {/* Video */}
           <div className="px-5 sm:px-6">
             <div className="rounded-xl overflow-hidden bg-black aspect-video">
-              <video src={videoUrl} controls autoPlay playsInline className="w-full h-full object-contain" style={{ background: "#000" }} />
+              <VideoPlayer src={videoUrl} autoPlay className="w-full h-full" />
             </div>
           </div>
 
-          {/* Filename */}
-          <div className="px-5 sm:px-6 pt-3">
-            <p className="text-[11px] text-[#a1a1a6] font-mono truncate">{filename}</p>
-          </div>
-
-          {/* Buttons — centered, directly below filename */}
-          <div className="px-5 sm:px-6 pt-3 pb-5 sm:pb-6 flex items-center justify-center gap-2.5">
+          {/* Buttons */}
+          <div className="px-5 sm:px-6 pt-3.5 pb-5 sm:pb-6 flex items-center justify-center gap-2.5">
             <button onClick={handleClose} className="px-5 py-2.5 rounded-xl text-xs font-medium text-[#86868b] bg-black/[0.04] hover:bg-black/[0.08] active:bg-black/[0.1] border border-black/[0.06] transition-all">
               Close
             </button>
