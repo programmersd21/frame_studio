@@ -99,12 +99,12 @@ function getHtmlBody(type: string, siteUrl: string, tokenHash: string): string {
 
 serve(async (req: Request) => {
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
   if (!RESEND_API_KEY) {
     console.error("RESEND_API_KEY not set");
-    return new Response("Server misconfiguration", { status: 500 });
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
   try {
@@ -112,7 +112,7 @@ serve(async (req: Request) => {
     const { user, email_data } = body;
 
     if (!user?.email || !email_data?.email_action_type) {
-      return new Response("Missing required fields", { status: 400 });
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
 
     const { email_action_type, site_url, token_hash } = email_data;
@@ -123,7 +123,7 @@ serve(async (req: Request) => {
 
     if (!html) {
       console.error(`Unknown email action type: ${email_action_type}`);
-      return new Response("Unknown action type", { status: 400 });
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
 
     const res = await fetch("https://api.resend.com/emails", {
@@ -138,12 +138,11 @@ serve(async (req: Request) => {
     if (!res.ok) {
       const err = await res.text();
       console.error("Resend error:", err);
-      return new Response("Failed to send email", { status: 502 });
     }
 
-    return new Response("OK", { status: 200 });
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (err) {
     console.error("send-email error:", err);
-    return new Response("Internal error", { status: 500 });
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 });
