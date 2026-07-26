@@ -94,34 +94,43 @@ export default function SettingsPage() {
     if (!file) return;
     setAvatarUploading(true);
     setAvatarError("");
-    const supabase = createClient();
-    const ext = file.name.split(".").pop();
-    const filePath = `${user.id}/avatar.${ext}`;
-    await supabase.storage.from("avatars").remove([
-      `${user.id}/avatar.png`, `${user.id}/avatar.jpg`,
-      `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`,
-    ]);
-    const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file);
-    if (uploadError) { setAvatarError(uploadError.message); setAvatarUploading(false); return; }
-    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: urlData.publicUrl } });
-    if (updateError) { setAvatarError(updateError.message); setAvatarUploading(false); return; }
-    setAvatarUrl(urlData.publicUrl);
-    setAvatarUploading(false);
-    window.dispatchEvent(new CustomEvent("avatar-updated"));
+    try {
+      const supabase = createClient();
+      const ext = file.name.split(".").pop();
+      const filePath = `${user.id}/avatar.${ext}`;
+      await supabase.storage.from("avatars").remove([
+        `${user.id}/avatar.png`, `${user.id}/avatar.jpg`,
+        `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`,
+      ]);
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+      if (uploadError) { setAvatarError(uploadError.message); setAvatarUploading(false); return; }
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      const { error: updateError } = await supabase.auth.updateUser({ data: { avatar_url: urlData.publicUrl } });
+      if (updateError) { setAvatarError(updateError.message); setAvatarUploading(false); return; }
+      setAvatarUrl(urlData.publicUrl);
+      window.dispatchEvent(new CustomEvent("avatar-updated"));
+    } catch (err: any) {
+      setAvatarError(err?.message || "Failed to upload avatar");
+    } finally {
+      setAvatarUploading(false);
+    }
   };
 
   const removeAvatar = async () => {
     setAvatarError("");
-    const supabase = createClient();
-    await supabase.storage.from("avatars").remove([
-      `${user.id}/avatar.png`, `${user.id}/avatar.jpg`,
-      `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`,
-    ]);
-    const { error } = await supabase.auth.updateUser({ data: { avatar_url: null } });
-    if (error) { setAvatarError(error.message); return; }
-    setAvatarUrl(null);
-    window.dispatchEvent(new CustomEvent("avatar-updated"));
+    try {
+      const supabase = createClient();
+      await supabase.storage.from("avatars").remove([
+        `${user.id}/avatar.png`, `${user.id}/avatar.jpg`,
+        `${user.id}/avatar.jpeg`, `${user.id}/avatar.webp`,
+      ]);
+      const { error } = await supabase.auth.updateUser({ data: { avatar_url: null } });
+      if (error) { setAvatarError(error.message); return; }
+      setAvatarUrl(null);
+      window.dispatchEvent(new CustomEvent("avatar-updated"));
+    } catch (err: any) {
+      setAvatarError(err?.message || "Failed to remove avatar");
+    }
   };
 
   if (loading) return (
