@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -37,9 +37,7 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
 
   const handleClose = () => {
     setIsClosing(true);
-    setTimeout(() => {
-      onClose?.();
-    }, 400); // Match animation duration
+    setTimeout(() => onClose?.(), 400);
   };
 
   return (
@@ -55,7 +53,6 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
         WebkitBackdropFilter: "blur(60px) saturate(180%)",
       }}
     >
-      {/* Animated light orbs floating behind the card */}
       {orbs.map((orb, i) => (
         <motion.div
           key={`orb-${i}`}
@@ -84,7 +81,6 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
         />
       ))}
 
-      {/* Gradient ambient wash on the overlay */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -95,18 +91,14 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
 
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
-        animate={{ 
-          opacity: isClosing ? 0 : 1, 
-          scale: isClosing ? 0.92 : 1, 
-          y: isClosing ? 20 : 0 
-        }}
+        animate={{ opacity: isClosing ? 0 : 1, scale: isClosing ? 0.92 : 1, y: isClosing ? 20 : 0 }}
         transition={{ duration: 0.4, ease: SOFT }}
         className="w-full max-w-sm relative"
       >
         <div
-          className="rounded-2xl overflow-hidden relative"
+          className="rounded-3xl overflow-hidden relative"
           style={{
-            background: "rgba(255,255,255,0.78)",
+            background: "rgba(255,255,255,0.82)",
             backdropFilter: "blur(40px) saturate(200%)",
             WebkitBackdropFilter: "blur(40px) saturate(200%)",
             border: "1px solid rgba(255,255,255,0.5)",
@@ -114,103 +106,122 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
               "0 24px 80px rgba(0,0,0,0.07), 0 10px 32px rgba(0,0,0,0.03), 0 1px 0 0 rgba(255,255,255,0.85) inset, 0 0 0 1px rgba(0,0,0,0.04)",
           }}
         >
-          {/* Close button - only show if onClose is provided */}
           {onClose && (
             <button
               onClick={handleClose}
               className="absolute top-4 right-4 z-10 w-6 h-6 rounded-full flex items-center justify-center hover:bg-black/[0.06] transition-all duration-200 group"
               aria-label="Close"
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="none"
-                className="text-[#86868b] group-hover:text-[#1d1d1f] transition-colors"
-              >
-                <path
-                  d="M1 1L11 11M1 11L11 1"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-[#86868b] group-hover:text-[#1d1d1f] transition-colors">
+                <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </button>
           )}
-          {/* Frosted top accent line */}
-          <div
-            className="h-[1px] mx-6"
-            style={{
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)",
-            }}
-          />
 
-          <div className="px-6 pt-5 pb-4 flex items-center gap-3">
-            <motion.div
-              animate={isDone ? { scale: [1, 0] } : { rotate: 360 }}
-              transition={
-                isDone
-                  ? { duration: 0.3 }
-                  : { duration: 1.6, repeat: Infinity, ease: "linear" }
-              }
-              className="w-4 h-4 shrink-0"
-            >
+          <div className="px-8 pt-8 pb-7 text-center">
+            {/* Animated indicator ring */}
+            <div className="relative w-14 h-14 mx-auto mb-5 flex items-center justify-center">
               {isDone ? (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 20,
-                  }}
-                  className="w-4 h-4 rounded-full bg-[#34c759]"
-                  style={{ boxShadow: "0 0 12px rgba(52,199,89,0.4)" }}
-                />
+                  transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
+                  className="w-14 h-14 rounded-full bg-[#34c759] flex items-center justify-center"
+                  style={{ boxShadow: "0 0 24px rgba(52,199,89,0.35)" }}
+                >
+                  <motion.svg
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.4, delay: 0.3, ease: SOFT }}
+                    width="20" height="16" viewBox="0 0 20 16" fill="none"
+                  >
+                    <motion.path
+                      d="M2 8.5L7 13.5L18 2"
+                      stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.4, delay: 0.3, ease: SOFT }}
+                    />
+                  </motion.svg>
+                </motion.div>
               ) : (
-                <div className="w-4 h-4 rounded-full border-2 border-[#0071e3]/20 border-t-[#0071e3]" />
+                <>
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      border: "2px solid rgba(0,113,227,0.1)",
+                      borderTopColor: "#0071e3",
+                    }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                  />
+                  <motion.div
+                    className="absolute inset-[-4px] rounded-full"
+                    style={{
+                      border: "1.5px solid transparent",
+                      borderTopColor: "rgba(0,113,227,0.15)",
+                    }}
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
+                  />
+                  <motion.div
+                    className="w-2 h-2 rounded-full bg-[#0071e3]"
+                    animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
+                    transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ boxShadow: "0 0 12px rgba(0,113,227,0.4)" }}
+                  />
+                </>
               )}
-            </motion.div>
-            <span className="text-sm font-semibold text-[#1d1d1f] tracking-tight">
+            </div>
+
+            <h3 className="text-base font-semibold text-[#1d1d1f] tracking-tight mb-1">
               {isDone ? "Complete" : "Generating video"}
-            </span>
-          </div>
+            </h3>
 
-          <div className="px-6 pb-6">
-            <motion.div
-              key={stage}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: SOFT }}
-            >
-              <p className="text-sm text-[#86868b] font-medium leading-relaxed">
-                {stage || "Processing..."}
-              </p>
-            </motion.div>
+            <div className="h-6 flex items-center justify-center">
+              <AnimatePresence mode="popLayout">
+                <motion.p
+                  key={stage}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25, ease: SOFT }}
+                  className="text-sm text-[#86868b] font-medium"
+                >
+                  {stage || "Processing..."}
+                </motion.p>
+              </AnimatePresence>
+            </div>
 
-            <div className="mt-4 h-1 bg-black/[0.06] rounded-full overflow-hidden relative">
+            {/* Progress bar */}
+            <div className="mt-5 h-1.5 bg-black/[0.05] rounded-full overflow-hidden relative">
               {isDone ? (
                 <motion.div
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 0.6, ease: SOFT }}
+                  transition={{ duration: 0.5, ease: SOFT }}
                   className="absolute top-0 left-0 h-full rounded-full bg-[#34c759]"
                   style={{ boxShadow: "0 0 8px rgba(52,199,89,0.3)" }}
                 />
-              ) : !percent ? (
-                <div className="absolute inset-0 flex items-center overflow-hidden">
+              ) : percent === 0 || percent === undefined ? (
+                <div className="absolute inset-0 overflow-hidden rounded-full">
                   <motion.div
-                    animate={{ x: ["-100%", "400%"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="h-full w-1/3 rounded-full bg-[#0071e3]"
-                    style={{ boxShadow: "0 0 8px rgba(0,113,227,0.3)" }}
+                    className="absolute inset-y-0 rounded-full"
+                    style={{
+                      width: "40%",
+                      background: "linear-gradient(90deg, transparent, #0071e3, transparent)",
+                      filter: "blur(1px)",
+                    }}
+                    animate={{ x: ["-100%", "350%"] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
                   />
+                  <div className="absolute inset-0 bg-black/[0.03] rounded-full" />
                 </div>
               ) : (
                 <motion.div
                   initial={{ width: "0%" }}
                   animate={{ width: `${percent}%` }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
                   className="absolute top-0 left-0 h-full rounded-full bg-[#0071e3]"
                   style={{ boxShadow: "0 0 8px rgba(0,113,227,0.3)" }}
                 />
@@ -218,30 +229,28 @@ export const ProgressScreen = ({ stage, percent, onClose }: ProgressScreenProps)
             </div>
 
             {percent !== undefined && percent > 0 && percent < 100 && (
-              <p className="mt-2 text-xs text-[#86868b] font-mono text-right">
+              <motion.p
+                key={Math.floor(percent / 10)}
+                className="mt-2 text-[11px] text-[#86868b] font-mono tabular-nums"
+              >
                 {percent}%
-              </p>
+              </motion.p>
             )}
           </div>
 
-          <div className="mx-6 h-[1px] bg-black/[0.04]" />
-          <div className="px-6 py-3 flex items-center justify-between text-[11px] text-[#86868b] font-mono">
+          <div className="mx-8 h-px bg-black/[0.04]" />
+          <div className="px-8 py-3 flex items-center justify-between text-[11px] text-[#86868b] font-mono">
             <span>Status</span>
             <span className="flex items-center gap-1.5">
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${isDone ? "bg-[#34c759]" : "bg-[#0071e3]"} animate-pulse`}
+              <motion.span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: isDone ? "#34c759" : "#0071e3" }}
+                animate={{ opacity: isDone ? 1 : [0.4, 1, 0.4] }}
+                transition={isDone ? {} : { duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               />
               {isDone ? "Done" : "Processing"}
             </span>
           </div>
-
-          {/* Bottom frost accent */}
-          <div
-            className="h-[1px] mx-6"
-            style={{
-              background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.03), transparent)",
-            }}
-          />
         </div>
       </motion.div>
     </motion.div>

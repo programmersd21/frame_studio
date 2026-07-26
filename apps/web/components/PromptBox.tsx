@@ -7,6 +7,15 @@ import { Command, ChevronDown, ArrowUpRight, Sparkles } from "lucide-react";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
+const PLACEHOLDERS = [
+  "Describe your motion graphics concept…",
+  "A futuristic city at night with neon lights…",
+  "Animated infographic about climate change…",
+  "Cinematic logo reveal with particle effects…",
+  "3D chart animation for quarterly earnings…",
+  "Kinetic typography with springy text reveals…",
+];
+
 interface PromptBoxProps {
   onGenerate: (prompt: string, model: string) => void;
   isLoading?: boolean;
@@ -39,9 +48,18 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
   const [buttonState, setButtonState]      = useState<ButtonState>("idle");
   const [isTyping, setIsTyping]            = useState(false);
   const [isFocused, setIsFocused]          = useState(false);
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const dropdownRef                        = useRef<HTMLDivElement>(null);
   const typingTimerRef                     = useRef<NodeJS.Timeout>();
   const textareaRef                        = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isFocused || prompt.length > 0) return;
+    const id = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % PLACEHOLDERS.length);
+    }, 3500);
+    return () => clearInterval(id);
+  }, [isFocused, prompt]);
 
   useEffect(() => {
     setButtonState(isLoading ? "loading" : "idle");
@@ -113,36 +131,58 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
             style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(32px)" }}
           >
             <div className="relative">
-              <textarea
-                ref={textareaRef}
-                value={prompt}
-                onChange={handlePromptChange}
-                onKeyDown={handleKeyDown}
-                disabled={isLoading}
-                placeholder="Describe your motion graphics concept…"
-                rows={3}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                style={{
-                  fontFamily: "var(--font-display)",
-                  letterSpacing: "-0.015em",
-                  willChange: "transform",
-                }}
-                className={`w-full bg-transparent text-[#1d1d1f] placeholder:text-[#86868b] text-[15px] leading-relaxed outline-none focus:outline-none focus:ring-0 resize-none transition-transform duration-75 ${
-                  isTyping ? "scale-[1.005]" : ""
-                }`}
-              />
+              <div className="relative">
+                <textarea
+                  ref={textareaRef}
+                  value={prompt}
+                  onChange={handlePromptChange}
+                  onKeyDown={handleKeyDown}
+                  disabled={isLoading}
+                  rows={3}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    letterSpacing: "-0.015em",
+                    willChange: "transform",
+                  }}
+                  className={`w-full bg-transparent text-[#1d1d1f] text-[15px] leading-relaxed outline-none focus:outline-none focus:ring-0 resize-none transition-transform duration-75 ${
+                    isTyping ? "scale-[1.005]" : ""
+                  }`}
+                />
 
-              {prompt.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="absolute bottom-1 right-0 text-[10px] text-[#c7c7cC] font-mono pointer-events-none"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  {prompt.length}
-                </motion.div>
-              )}
+                {prompt.length === 0 && !isFocused && (
+                  <div className="absolute top-0 left-0 right-0 pointer-events-none overflow-hidden">
+                    <AnimatePresence mode="popLayout">
+                      <motion.span
+                        key={placeholderIdx}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.25, ease: SOFT }}
+                        className="block text-[15px] leading-relaxed text-[#86868b]"
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          letterSpacing: "-0.015em",
+                        }}
+                      >
+                        {PLACEHOLDERS[placeholderIdx]}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                {prompt.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute bottom-1 right-0 text-[10px] text-[#c7c7cC] font-mono pointer-events-none"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {prompt.length}
+                  </motion.div>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center justify-between gap-4 pt-3 border-t border-black/[0.05] mt-2">

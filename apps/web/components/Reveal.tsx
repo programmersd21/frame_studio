@@ -12,12 +12,14 @@ interface RevealProps {
 export const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = "" }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.65,
+        type: "spring",
+        stiffness: 100,
+        damping: 22,
+        mass: 0.6,
         delay,
-        ease: [0.22, 1, 0.36, 1],
       }}
       className={className}
     >
