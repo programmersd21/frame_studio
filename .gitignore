@@ -10,6 +10,7 @@ tmp
 *.png
 !image.png
 !apps/web/public/favicon.png
+!apps/web/public/icon-256.png
 !apps/web/public/icon-512.png
 *.jpeg
 *.jpg
