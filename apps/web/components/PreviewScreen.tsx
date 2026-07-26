@@ -30,10 +30,25 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
     return () => { document.documentElement.style.overflow = prev; };
   }, []);
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     setDownloadState("loading");
-    setTimeout(() => setDownloadState("success"), 800);
-    setTimeout(() => setDownloadState("idle"), 2400);
+    try {
+      const res = await fetch(videoUrl);
+      if (!res.ok) throw new Error("Download failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setDownloadState("success");
+      setTimeout(() => setDownloadState("idle"), 2400);
+    } catch {
+      setDownloadState("idle");
+    }
   };
 
   const handleSave = async () => {
@@ -119,12 +134,18 @@ export const PreviewScreen = ({ videoUrl, filename, prompt, model, onClose }: Pr
                 )}
               </button>
             )}
-            <a href={downloadState === "idle" ? videoUrl : undefined} download={downloadState === "idle" ? filename : undefined} onClick={handleDownload}
-              className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] active:bg-[#0060c0] transition-all cursor-pointer"
+            <button onClick={handleDownload} disabled={downloadState === "loading"}
+              className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] active:bg-[#0060c0] disabled:opacity-60 transition-all cursor-pointer"
               style={{ boxShadow: "0 4px 14px rgba(0,113,227,0.25)" }}
             >
-              <Download className="w-3.5 h-3.5" strokeWidth={2.5} /> Download
-            </a>
+              {downloadState === "loading" ? (
+                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : downloadState === "success" ? (
+                <><Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Downloaded</>
+              ) : (
+                <><Download className="w-3.5 h-3.5" strokeWidth={2.5} /> Download</>
+              )}
+            </button>
           </div>
         </div>
       </motion.div>

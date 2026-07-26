@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Video, Clock, Trash2, ExternalLink, Sparkles, User, Copy, Check, Film } from "lucide-react";
+import { LogOut, Video, Clock, Trash2, ExternalLink, Sparkles, User, Copy, Check, Film, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { LiquidGlass } from "@/components/LiquidGlass";
@@ -29,6 +29,25 @@ export default function ProfilePage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const handleDownload = async (id: string, url: string, filename: string) => {
+    setDownloadingId(id);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const objUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(objUrl);
+    } catch {}
+    setDownloadingId(null);
+  };
 
   const handleCopyPrompt = async (id: string, text: string) => {
     try {
@@ -259,6 +278,19 @@ export default function ProfilePage() {
                       {formatDate(video.created_at)}
                     </div>
                     <div className="flex items-center gap-1">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleDownload(video.id, video.video_url, `${video.prompt || "video"}.mp4`)}
+                        disabled={downloadingId === video.id}
+                        className="p-1.5 rounded-full text-[#86868b] hover:text-[#0071e3] hover:bg-[#0071e3]/10 transition-all duration-200 disabled:opacity-30"
+                      >
+                        {downloadingId === video.id ? (
+                          <div className="w-3.5 h-3.5 border-2 border-[#86868b]/30 border-t-[#86868b] rounded-full animate-spin" />
+                        ) : (
+                          <Download className="w-3.5 h-3.5" strokeWidth={1.5} />
+                        )}
+                      </motion.button>
                       <motion.a
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
