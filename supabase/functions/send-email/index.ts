@@ -3,7 +3,9 @@ import { serve } from "std/http/server.ts";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "onboarding@resend.dev";
 
-const BASE_EMAIL = (siteUrl: string, title: string, gradient: string, bodyContent: string) => `<!DOCTYPE html>
+const APP_URL = "https://frame-studio-eta.vercel.app";
+
+const BASE_EMAIL = (title: string, gradient: string, bodyContent: string) => `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -62,34 +64,33 @@ function getSubject(type: string): string {
   }
 }
 
-function getHtmlBody(type: string, siteUrl: string, tokenHash: string): string {
-  const magicUrl = `${siteUrl}/auth/callback?token_hash=${tokenHash}&type=magiclink`;
-  const recoveryUrl = `${siteUrl}/auth/callback?token_hash=${tokenHash}&type=recovery`;
+function getHtmlBody(type: string, redirectTo: string, tokenHash: string): string {
+  const url = `${redirectTo}?token_hash=${tokenHash}&type=${type}`;
 
   if (type === "magiclink") {
-    return BASE_EMAIL(siteUrl, "Sign in to Frame Studio", "linear-gradient(90deg,#0071e3,#34e0a4)", `
+    return BASE_EMAIL("Sign in to Frame Studio", "linear-gradient(90deg,#0071e3,#34e0a4)", `
       <tr><td style="text-align:center;padding-bottom:6px">
         <h1 style="margin:0;font-size:22px;font-weight:600;color:#1d1d1f">Sign in to Frame Studio</h1>
       </td></tr>
       <tr><td style="text-align:center;padding-bottom:28px">
         <p style="margin:0;font-size:15px;line-height:1.6;color:#86868b">Click the button below to sign in instantly. No password needed.</p>
       </td></tr>
-      ${btnCell(magicUrl, "Sign In")}
-      ${fallbackCell(magicUrl)}
+      ${btnCell(url, "Sign In")}
+      ${fallbackCell(url)}
       ${footerCell}
     `);
   }
 
   if (type === "recovery") {
-    return BASE_EMAIL(siteUrl, "Reset your password", "linear-gradient(90deg,#ff9f0a,#ff2d55)", `
+    return BASE_EMAIL("Reset your password", "linear-gradient(90deg,#ff9f0a,#ff2d55)", `
       <tr><td style="text-align:center;padding-bottom:6px">
         <h1 style="margin:0;font-size:22px;font-weight:600;color:#1d1d1f">Reset your password</h1>
       </td></tr>
       <tr><td style="text-align:center;padding-bottom:28px">
         <p style="margin:0;font-size:15px;line-height:1.6;color:#86868b">Click the button below to create a new password for your account.</p>
       </td></tr>
-      ${btnCell(recoveryUrl, "Reset Password")}
-      ${fallbackCell(recoveryUrl)}
+      ${btnCell(url, "Reset Password")}
+      ${fallbackCell(url)}
       ${footerCell}
     `);
   }
@@ -115,11 +116,11 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
 
-    const { email_action_type, site_url, token_hash } = email_data;
-    const siteUrl = site_url || "http://localhost:3000";
+    const { email_action_type, redirect_to, token_hash } = email_data;
+    const callbackUrl = redirect_to || `${APP_URL}/auth/callback`;
 
     const subject = getSubject(email_action_type);
-    const html = getHtmlBody(email_action_type, siteUrl, token_hash);
+    const html = getHtmlBody(email_action_type, callbackUrl, token_hash);
 
     if (!html) {
       console.error(`Unknown email action type: ${email_action_type}`);
