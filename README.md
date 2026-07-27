@@ -161,7 +161,6 @@ apps/web/                 Next.js app with API routes and UI
 │   │   ├── apikey/       API key management (httpOnly cookie)
 │   │   ├── auth/user/    Current user endpoint
 │   │   ├── generate/     Video generation pipeline
-│   │   ├── parse-pdf/    PDF text extraction endpoint
 │   │   └── videos/       Save / list / delete saved videos
 │   ├── auth/
 │   │   ├── callback/     OAuth + auth callback handler

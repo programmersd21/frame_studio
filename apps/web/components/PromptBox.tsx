@@ -80,21 +80,21 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     setPdfUploading(true);
     setPdfError("");
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/parse-pdf", { method: "POST", body: formData });
-      if (!res.ok) {
-        const text = await res.text();
-        try {
-          const data = JSON.parse(text);
-          throw new Error(data.error || "Failed to parse PDF");
-        } catch {
-          throw new Error(text.slice(0, 200) || "Server error (" + res.status + ")");
-        }
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfjsLib = await import("pdfjs-dist");
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map((item: any) => item.str).join(" ");
+        fullText += pageText + "\n\n";
       }
-      const data = await res.json();
+      fullText = fullText.trim();
+      if (!fullText) throw new Error("Could not extract text from PDF. The file may be image-based.");
       setPdfFileName(file.name);
-      setPdfContent(data.text);
+      setPdfContent(fullText);
     } catch (err: any) {
       setPdfError(err.message || "Failed to parse PDF");
     } finally {
