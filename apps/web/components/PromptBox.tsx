@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GenerateButton, ButtonState } from "./GenerateButton";
-import { Command, ChevronDown, ArrowUpRight, Sparkles, FileText, X, Upload } from "lucide-react";
+import { Command, ChevronDown, Sparkles, FileText, X, Upload } from "lucide-react";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -62,7 +62,9 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
   const [pdfContent, setPdfContent]        = useState<string | null>(null);
   const [pdfUploading, setPdfUploading]    = useState(false);
   const [pdfError, setPdfError]            = useState("");
+  const [conceptsOpen, setConceptsOpen] = useState(false);
   const dropdownRef                        = useRef<HTMLDivElement>(null);
+  const conceptsRef                        = useRef<HTMLDivElement>(null);
   const typingTimerRef                     = useRef<NodeJS.Timeout>();
   const textareaRef                        = useRef<HTMLTextAreaElement>(null);
   const pdfInputRef                        = useRef<HTMLInputElement>(null);
@@ -113,6 +115,16 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setModelOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (conceptsRef.current && !conceptsRef.current.contains(e.target as Node)) {
+        setConceptsOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -388,45 +400,88 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
         </motion.div>
       </form>
 
-      <div className="space-y-2.5">
-        <p
-          className="text-[11px] tracking-wide text-[#a1a1a6] uppercase"
+      <div className="relative" ref={conceptsRef}>
+        <button
+          type="button"
+          onClick={() => setConceptsOpen((v) => !v)}
+          className="flex items-center gap-1.5 text-[11px] tracking-wide text-[#a1a1a6] uppercase hover:text-[#1d1d1f] transition-colors"
           style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.08em" }}
         >
-          Concepts
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {PRESETS.map((preset, idx) => {
-            const colors = ["#ff2d55", "#bf5af2", "#0071e3", "#34e0a4"];
-            return (
-              <motion.button
-                key={idx}
-                type="button"
-                whileHover={{ y: -2, scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.22, ease: SOFT }}
-                onClick={() => {
-                  setPrompt(preset);
-                  textareaRef.current?.focus();
-                }}
-                style={{ fontFamily: "var(--font-sans)" }}
-                className="group/p relative text-left px-4 py-3 rounded-xl text-xs text-[#3a3a3c] bg-white/70 hover:bg-white border border-black/[0.06] hover:border-black/[0.12] shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] flex items-center justify-between gap-3 overflow-hidden"
-              >
-                <div
-                  className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl opacity-0 group-hover/p:opacity-100 transition-opacity duration-300"
-                  style={{ background: colors[idx], boxShadow: `0 0 8px ${colors[idx]}40` }}
-                />
-                <span className="line-clamp-1 leading-relaxed pl-1 transition-transform duration-200 group-hover/p:translate-x-0.5">
-                  {preset}
-                </span>
-                <ArrowUpRight
-                  className="w-3.5 h-3.5 shrink-0 transition-all duration-200"
-                  style={{ color: "#a1a1a6" }}
-                />
-              </motion.button>
-            );
-          })}
-        </div>
+          Concepts &amp; Duration
+          <motion.span animate={{ rotate: conceptsOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown className="w-3 h-3" strokeWidth={2} />
+          </motion.span>
+        </button>
+
+        <AnimatePresence>
+          {conceptsOpen && (
+            <motion.div
+              key="concepts-dropdown"
+              initial={{ opacity: 0, scale: 0.96, y: -6 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: -4 }}
+              transition={{ duration: 0.2, ease: SOFT }}
+              className="absolute top-full left-0 mt-1.5 z-50 w-full min-w-[300px] sm:min-w-[400px] rounded-xl overflow-hidden lg shadow-[0_16px_40px_rgba(0,0,0,0.10),0_1px_0_rgba(255,255,255,0.9)_inset]"
+            >
+              <div className="py-2" style={{ background: "rgba(249,250,251,0.95)" }}>
+                <p className="px-4 py-1.5 text-[10px] font-semibold text-[#a1a1a6] uppercase tracking-widest">
+                  Presets
+                </p>
+                {PRESETS.map((preset, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setPrompt(preset);
+                      textareaRef.current?.focus();
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-xs text-[#1d1d1f] hover:bg-black/[0.04] flex items-center gap-3 transition-colors"
+                  >
+                    <div className="w-3.5 h-3.5 rounded border border-black/20 flex items-center justify-center shrink-0" />
+                    {preset}
+                  </button>
+                ))}
+                <div className="mx-3 my-1.5 h-px bg-black/[0.06]" />
+                <p className="px-4 py-1.5 text-[10px] font-semibold text-[#a1a1a6] uppercase tracking-widest">
+                  Duration
+                </p>
+                <div className="px-4 py-2 flex items-center justify-between">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <div
+                      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                        selectedDuration === null
+                          ? "border-[#0071e3] bg-[#0071e3]"
+                          : "border-black/20 hover:border-black/40"
+                      }`}
+                      onClick={() => setSelectedDuration(null)}
+                    >
+                      {selectedDuration === null && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                      )}
+                    </div>
+                    <span className="text-xs font-medium text-[#1d1d1f]">Auto (AI decides)</span>
+                  </label>
+                </div>
+                <div className="flex gap-1.5 px-4 pb-3">
+                  {DURATION_PRESETS.map((d) => (
+                    <button
+                      key={d.value}
+                      type="button"
+                      onClick={() => setSelectedDuration(selectedDuration === d.value ? null : d.value)}
+                      className={`flex-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
+                        selectedDuration === d.value
+                          ? "bg-[#0071e3] text-white border-[#0071e3]"
+                          : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
+                      }`}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
