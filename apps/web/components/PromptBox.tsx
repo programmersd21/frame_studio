@@ -63,8 +63,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
   const [isTyping, setIsTyping]            = useState(false);
   const [isFocused, setIsFocused]          = useState(false);
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
-  const [pdfFileName, setPdfFileName]      = useState<string | null>(null);
-  const [pdfContent, setPdfContent]        = useState<string | null>(null);
+  const [pdfFiles, setPdfFiles]            = useState<{ name: string; content: string }[]>([]);
   const [pdfUploading, setPdfUploading]    = useState(false);
   const [pdfError, setPdfError]            = useState("");
   const [durationOpen, setDurationOpen] = useState(false);
@@ -93,8 +92,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
       }
       fullText = fullText.trim();
       if (!fullText) throw new Error("Could not extract text from PDF. The file may be image-based.");
-      setPdfFileName(file.name);
-      setPdfContent(fullText);
+      setPdfFiles((prev) => [...prev, { name: file.name, content: fullText }]);
     } catch (err: any) {
       setPdfError(err.message || "Failed to parse PDF");
     } finally {
@@ -103,9 +101,8 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     }
   };
 
-  const removePdf = () => {
-    setPdfFileName(null);
-    setPdfContent(null);
+  const removePdf = (index: number) => {
+    setPdfFiles((prev) => prev.filter((_, i) => i !== index));
     setPdfError("");
   };
 
@@ -152,7 +149,8 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     if (e) e.preventDefault();
     if (!prompt.trim() || isLoading) return;
     setButtonState("animating");
-    setTimeout(() => onGenerate(prompt.trim(), selectedModel, selectedDuration ?? undefined, pdfContent ?? undefined), 500);
+    const combined = pdfFiles.map((f) => `--- ${f.name} ---\n${f.content}`).join("\n\n");
+    setTimeout(() => onGenerate(prompt.trim(), selectedModel, selectedDuration ?? undefined, combined || undefined), 500);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -251,22 +249,24 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
               </div>
             </div>
 
-            {(pdfFileName || pdfUploading) && (
-              <div className="mt-2 px-1">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0071e3]/[0.04] border border-[#0071e3]/10">
-                  {pdfUploading ? (
-                    <div className="w-4 h-4 border-2 border-[#0071e3]/30 border-t-[#0071e3] rounded-full animate-spin shrink-0" />
-                  ) : (
+            {pdfFiles.length > 0 && (
+              <div className="mt-2 px-1 space-y-1.5">
+                {pdfFiles.map((f, idx) => (
+                  <div key={idx} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0071e3]/[0.04] border border-[#0071e3]/10">
                     <FileText className="w-4 h-4 text-[#0071e3] shrink-0" strokeWidth={1.5} />
-                  )}
-                  <span className="text-xs text-[#1d1d1f] truncate flex-1">
-                    {pdfUploading ? "Extracting text from PDF..." : pdfFileName}
-                  </span>
-                  {!pdfUploading && (
-                    <button type="button" onClick={removePdf} className="shrink-0 p-0.5 rounded-full hover:bg-black/[0.06] transition-colors">
+                    <span className="text-xs text-[#1d1d1f] truncate flex-1">{f.name}</span>
+                    <button type="button" onClick={() => removePdf(idx)} className="shrink-0 p-0.5 rounded-full hover:bg-black/[0.06] transition-colors">
                       <X className="w-3 h-3 text-[#86868b]" strokeWidth={2} />
                     </button>
-                  )}
+                  </div>
+                ))}
+              </div>
+            )}
+            {pdfUploading && (
+              <div className="mt-2 px-1">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0071e3]/[0.04] border border-[#0071e3]/10">
+                  <div className="w-4 h-4 border-2 border-[#0071e3]/30 border-t-[#0071e3] rounded-full animate-spin shrink-0" />
+                  <span className="text-xs text-[#1d1d1f] truncate flex-1">Extracting text from PDF...</span>
                 </div>
               </div>
             )}
@@ -422,13 +422,13 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   onClick={() => pdfInputRef.current?.click()}
                   disabled={isLoading || pdfUploading}
                   className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200 ${
-                    pdfFileName
+                    pdfFiles.length > 0
                       ? "bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20"
                       : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
                   }`}
                 >
                   <Upload className="w-3 h-3" strokeWidth={2} />
-                  <span>PDF</span>
+                  <span>PDF{pdfFiles.length > 0 ? ` (${pdfFiles.length})` : ""}</span>
                 </button>
               </div>
 

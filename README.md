@@ -112,7 +112,7 @@ Also update the Supabase Dashboard **Site URL** and **Redirect URLs** to match y
 - **Real-time progress screen** with stage updates
 - **Concept presets** — apply-style buttons for quick prompts
 - **Duration presets** — Auto (AI), 5s, 10s, 15s, 30s, 1m, 2m, 3m, 5m, 10m, 15m
-- **PDF content extraction** — upload PDFs and generate videos from their content
+- **PDF content extraction** — upload multiple PDFs and generate videos from their combined content
 - **Sponsor banner** — permanent banner linking to GitHub Sponsors
 - **Data visualization** — AI generates SVG charts, graphs, and data tables in videos
 - **Improved system prompts** — better layout, chart rendering, and presentation quality
