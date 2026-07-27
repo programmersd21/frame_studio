@@ -64,6 +64,7 @@ const QUALITY_PRESETS = [
 const ASPECT_RATIO_PRESETS = [
   { label: "16:9",  w: 16, h: 9,  desc: "Landscape" },
   { label: "4:3",   w: 4,  h: 3,  desc: "Standard" },
+  { label: "3:4",   w: 3,  h: 4,  desc: "Portrait" },
   { label: "1:1",   w: 1,  h: 1,  desc: "Square" },
   { label: "9:16",  w: 9,  h: 16, desc: "Portrait" },
 ];
