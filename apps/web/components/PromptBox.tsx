@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GenerateButton, ButtonState } from "./GenerateButton";
-import { Command, ChevronDown, Sparkles, FileText, X, Upload, Clock, Monitor } from "lucide-react";
+import { Command, ChevronDown, Sparkles, FileText, X, Upload, Clock, Monitor, Crop, SlidersHorizontal } from "lucide-react";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -86,6 +86,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
   const [selectedAspect, setSelectedAspect] = useState<(typeof ASPECT_RATIO_PRESETS)[number]>(ASPECT_RATIO_PRESETS[0]);
   const [qualityOpen, setQualityOpen] = useState(false);
   const [aspectOpen, setAspectOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const dropdownRef                        = useRef<HTMLDivElement>(null);
   const durationRef                        = useRef<HTMLDivElement>(null);
   const qualityRef                         = useRef<HTMLDivElement>(null);
@@ -522,7 +523,8 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                         : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
                     }`}
                   >
-                    <span className="text-[10px] font-semibold leading-none">{selectedAspect.label}</span>
+                    <Crop className="w-3 h-3" strokeWidth={2} />
+                    <span>{selectedAspect.label}</span>
                     <motion.span animate={{ rotate: aspectOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
                     </motion.span>
@@ -560,6 +562,16 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   </AnimatePresence>
                 </div>
 
+                {/* Mobile more options toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowMore((v) => !v)}
+                  disabled={isLoading}
+                  className="sm:hidden flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium border bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f] transition-all duration-200"
+                >
+                  <SlidersHorizontal className="w-3 h-3" strokeWidth={2} />
+                </button>
+
                 <button
                   type="button"
                   onClick={() => pdfInputRef.current?.click()}
@@ -579,6 +591,42 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                 <GenerateButton state={buttonState} onClick={handleSubmit} disabled={!prompt.trim()} />
               </div>
             </div>
+
+            {showMore && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="sm:hidden flex items-center gap-2 mt-2 pt-2 border-t border-black/[0.05]"
+              >
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const idx = QUALITY_PRESETS.findIndex((r) => r.label === selectedQuality.label);
+                      setSelectedQuality(QUALITY_PRESETS[(idx + 1) % QUALITY_PRESETS.length]);
+                    }}
+                    disabled={isLoading}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f] transition-all duration-200"
+                  >
+                    <Monitor className="w-3 h-3" strokeWidth={2} />
+                    <span>{selectedQuality.label}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const idx = ASPECT_RATIO_PRESETS.findIndex((r) => r.label === selectedAspect.label);
+                      setSelectedAspect(ASPECT_RATIO_PRESETS[(idx + 1) % ASPECT_RATIO_PRESETS.length]);
+                    }}
+                    disabled={isLoading}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f] transition-all duration-200"
+                  >
+                    <Crop className="w-3 h-3" strokeWidth={2} />
+                    <span>{selectedAspect.label}</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
           </div>
         </motion.div>
       </form>
