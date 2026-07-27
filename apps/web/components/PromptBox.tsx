@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GenerateButton, ButtonState } from "./GenerateButton";
-import { Command, ChevronDown, Sparkles, FileText, X, Upload } from "lucide-react";
+import { Command, ChevronDown, Sparkles, FileText, X, Upload, Clock } from "lucide-react";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -356,10 +356,11 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
                         : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
                     }`}
                   >
+                    <Clock className="w-3 h-3" strokeWidth={2} />
+                    <span>{selectedDuration !== null ? selectedDuration + "s" : "Auto"}</span>
                     <motion.span animate={{ rotate: durationOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
                     </motion.span>
-                    <span>{selectedDuration !== null ? selectedDuration + "s" : "Auto"}</span>
                   </button>
                   <AnimatePresence>
                     {durationOpen && (
@@ -369,7 +370,8 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.96, y: 4 }}
                         transition={{ duration: 0.2, ease: SOFT }}
-                        className="absolute top-[calc(100%+4px)] left-0 z-50 w-28 rounded-xl overflow-hidden lg shadow-[0_12px_32px_rgba(0,0,0,0.10)]"
+                        style={{ transformOrigin: "bottom left" }}
+                        className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-28 rounded-xl overflow-hidden lg shadow-[0_12px_32px_rgba(0,0,0,0.10)]"
                       >
                         <div style={{ background: "rgba(249,250,251,0.95)" }}>
                           <button
