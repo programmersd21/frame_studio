@@ -393,7 +393,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                 </div>
 
                 <div
-                  className="hidden sm:flex items-center gap-1 text-[11px] text-[#a1a1a6]"
+                  className="hidden lg:flex items-center gap-1 text-[11px] text-[#a1a1a6] shrink-0"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
                   <Command className="w-3 h-3" strokeWidth={1.5} />
@@ -567,7 +567,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   type="button"
                   onClick={() => setShowMore((v) => !v)}
                   disabled={isLoading}
-                  className="sm:hidden flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium border bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f] transition-all duration-200"
+                  className="sm:hidden flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f] transition-all duration-200"
                 >
                   <SlidersHorizontal className="w-3 h-3" strokeWidth={2} />
                 </button>
@@ -587,7 +587,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <GenerateButton state={buttonState} onClick={handleSubmit} disabled={!prompt.trim()} />
               </div>
             </div>
@@ -623,6 +623,19 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   >
                     <Crop className="w-3 h-3" strokeWidth={2} />
                     <span>{selectedAspect.label}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => pdfInputRef.current?.click()}
+                    disabled={isLoading || pdfUploading}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200 ${
+                      pdfFiles.length > 0
+                        ? "bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20"
+                        : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
+                    }`}
+                  >
+                    <Upload className="w-3 h-3" strokeWidth={2} />
+                    <span>PDF{pdfFiles.length > 0 ? ` (${pdfFiles.length})` : ""}</span>
                   </button>
                 </div>
               </motion.div>
