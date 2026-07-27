@@ -41,6 +41,8 @@ export async function POST(req: NextRequest) {
     const clientApiKey = body.apiKey?.trim();
     const durationSeconds = body.durationSeconds ? Number(body.durationSeconds) : undefined;
     const pdfContent = body.pdfContent?.trim() || undefined;
+    const width = body.width ? Number(body.width) : 1920;
+    const height = body.height ? Number(body.height) : 1080;
 
     if (!prompt) {
       return NextResponse.json({ error: "Prompt is required." }, { status: 400 });
@@ -75,7 +77,7 @@ export async function POST(req: NextRequest) {
 
     // STAGE 2: CODEGEN
     console.log(`[Generate] STAGE: Generating Code...`);
-    let currentCode: CodeFileMap = await generateCode(brief, [], model, pdfContent);
+    let currentCode: CodeFileMap = await generateCode(brief, [], model, pdfContent, width, height);
     console.log(`[Generate] Codegen complete. Files: ${Object.keys(currentCode).join(", ")}`);
 
     // STAGE 3 & 4: COMPILE & FIX LOOP
@@ -124,8 +126,8 @@ export async function POST(req: NextRequest) {
       metadata: {
         durationInFrames,
         fps,
-        width: 1920,
-        height: 1080,
+        width,
+        height,
         durationSeconds: brief.durationSeconds,
       },
     });

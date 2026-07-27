@@ -324,6 +324,8 @@ export async function generateCode(
   assets: AssetRef[] = [],
   modelName?: string,
   pdfContent?: string,
+  width: number = 1920,
+  height: number = 1080,
 ): Promise<CodeFileMap> {
   let userContent = JSON.stringify({ brief, assets }, null, 2);
   if (pdfContent) {
@@ -331,9 +333,15 @@ export async function generateCode(
     userContent += `\n\n--- EXTRACTED PDF CONTENT ---\n${truncated}\n--- END PDF CONTENT ---\nUse this PDF content as the primary source for scene data, statistics, and narrative.`;
   }
 
+  const systemPrompt = CODEGEN_SYSTEM_PROMPT
+    .replace(/\{WIDTH\}/g, String(width))
+    .replace(/\{HEIGHT\}/g, String(height))
+    .replace(/\{SAFE_WIDTH\}/g, String(width - 160))
+    .replace(/\{SAFE_HEIGHT\}/g, String(height - 160));
+
   for (let attempt = 0; attempt <= MAX_CODEGEN_RETRIES; attempt++) {
     const messages = [
-      { role: "system" as const, content: CODEGEN_SYSTEM_PROMPT },
+      { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: `Generate Remotion React code for this Creative Brief:\n${userContent}` },
     ];
 

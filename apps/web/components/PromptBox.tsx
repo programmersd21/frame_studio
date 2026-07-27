@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GenerateButton, ButtonState } from "./GenerateButton";
-import { Command, ChevronDown, Sparkles, FileText, X, Upload, Clock } from "lucide-react";
+import { Command, ChevronDown, Sparkles, FileText, X, Upload, Clock, Monitor } from "lucide-react";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -17,7 +17,7 @@ const PLACEHOLDERS = [
 ];
 
 interface PromptBoxProps {
-  onGenerate: (prompt: string, model: string, duration?: number, pdfContent?: string) => void;
+  onGenerate: (prompt: string, model: string, duration?: number, pdfContent?: string, width?: number, height?: number) => void;
   isLoading?: boolean;
 }
 
@@ -54,6 +54,13 @@ const DURATION_PRESETS = [
   { label: "15m", value: 900, desc: "Comprehensive" },
 ];
 
+const RESOLUTION_PRESETS = [
+  { label: "720p",  width: 1280, height: 720,  desc: "HD" },
+  { label: "1080p", width: 1920, height: 1080, desc: "Full HD" },
+  { label: "2K",    width: 2560, height: 1440, desc: "QHD" },
+  { label: "4K",    width: 3840, height: 2160, desc: "Ultra HD" },
+];
+
 export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = false }) => {
   const [prompt, setPrompt]               = useState("");
   const [selectedModel, setSelectedModel]  = useState(DEFAULT_MODEL);
@@ -67,8 +74,11 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
   const [pdfUploading, setPdfUploading]    = useState(false);
   const [pdfError, setPdfError]            = useState("");
   const [durationOpen, setDurationOpen] = useState(false);
+  const [selectedResolution, setSelectedResolution] = useState<(typeof RESOLUTION_PRESETS)[number]>(RESOLUTION_PRESETS[1]);
+  const [resolutionOpen, setResolutionOpen] = useState(false);
   const dropdownRef                        = useRef<HTMLDivElement>(null);
   const durationRef                        = useRef<HTMLDivElement>(null);
+  const resolutionRef                      = useRef<HTMLDivElement>(null);
   const typingTimerRef                     = useRef<NodeJS.Timeout>();
   const textareaRef                        = useRef<HTMLTextAreaElement>(null);
   const pdfInputRef                        = useRef<HTMLInputElement>(null);
@@ -138,6 +148,16 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (resolutionRef.current && !resolutionRef.current.contains(e.target as Node)) {
+        setResolutionOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
     setIsTyping(true);
@@ -150,7 +170,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     if (!prompt.trim() || isLoading) return;
     setButtonState("animating");
     const combined = pdfFiles.map((f) => `--- ${f.name} ---\n${f.content}`).join("\n\n");
-    setTimeout(() => onGenerate(prompt.trim(), selectedModel, selectedDuration ?? undefined, combined || undefined), 500);
+    setTimeout(() => onGenerate(prompt.trim(), selectedModel, selectedDuration ?? undefined, combined || undefined, selectedResolution.width, selectedResolution.height), 500);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -409,6 +429,56 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                             >
                               <span>{d.label}</span>
                               {selectedDuration === d.value && <div className="w-1.5 h-1.5 rounded-full bg-[#0071e3]" />}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div ref={resolutionRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setResolutionOpen((v) => !v)}
+                    disabled={isLoading}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200 ${
+                      resolutionOpen
+                        ? "bg-[#0071e3] text-white border-[#0071e3] shadow-[0_2px_8px_rgba(0,113,227,0.25)]"
+                        : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
+                    }`}
+                  >
+                    <Monitor className="w-3 h-3" strokeWidth={2} />
+                    <span>{selectedResolution.label}</span>
+                    <motion.span animate={{ rotate: resolutionOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
+                    </motion.span>
+                  </button>
+                  <AnimatePresence>
+                    {resolutionOpen && (
+                      <motion.div
+                        key="resolution-dropdown"
+                        initial={{ opacity: 0, scale: 0.94, y: 6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: 4 }}
+                        transition={{ duration: 0.2, ease: SOFT }}
+                        style={{ transformOrigin: "bottom left" }}
+                        className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-32 rounded-xl overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.10)]"
+                      >
+                        <div style={{ background: "rgba(249,250,251,0.95)" }}>
+                          {RESOLUTION_PRESETS.map((r) => (
+                            <button
+                              key={r.label}
+                              type="button"
+                              onClick={() => { setSelectedResolution(r); setResolutionOpen(false); }}
+                              className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
+                                selectedResolution.label === r.label
+                                  ? "text-[#0071e3] bg-[#0071e3]/[0.06]"
+                                  : "text-[#1d1d1f] hover:bg-black/[0.04]"
+                              }`}
+                            >
+                              <span>{r.label}</span>
+                              <span className="text-[10px] text-[#a1a1a6]">{r.desc}</span>
                             </button>
                           ))}
                         </div>

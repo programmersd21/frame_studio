@@ -22,7 +22,7 @@ export default function HomePage() {
   const [progressPercent, setProgressPercent] = useState(0);
   const [preview, setPreview] = useState<{ url: string; filename: string; prompt?: string; model?: string } | null>(null);
 
-  const handleGenerate = async (prompt: string, model: string, duration?: number, pdfContent?: string) => {
+  const handleGenerate = async (prompt: string, model: string, duration?: number, pdfContent?: string, width?: number, height?: number) => {
     setIsLoading(true);
     setProgressStage("Generating your video...");
     setProgressPercent(0);
@@ -31,7 +31,7 @@ export default function HomePage() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model, durationSeconds: duration, pdfContent }),
+        body: JSON.stringify({ prompt, model, durationSeconds: duration, pdfContent, width, height }),
       });
 
       if (!res.ok) {
