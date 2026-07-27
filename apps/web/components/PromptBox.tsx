@@ -43,10 +43,16 @@ const GEMINI_MODELS = [
 const DEFAULT_MODEL = "gemini-3.6-flash";
 
 const DURATION_PRESETS = [
-  { label: "5s", value: 5, desc: "Quick" },
-  { label: "10s", value: 10, desc: "Standard" },
-  { label: "15s", value: 15, desc: "Detailed" },
-  { label: "30s", value: 30, desc: "Full" },
+  { label: "5s",  value: 5,   desc: "Teaser" },
+  { label: "10s", value: 10,  desc: "Short" },
+  { label: "15s", value: 15,  desc: "Standard" },
+  { label: "30s", value: 30,  desc: "Full reel" },
+  { label: "1m",  value: 60,  desc: "Extended" },
+  { label: "2m",  value: 120, desc: "Deep dive" },
+  { label: "3m",  value: 180, desc: "Presentation" },
+  { label: "5m",  value: 300, desc: "Full talk" },
+  { label: "10m", value: 600, desc: "Keynote" },
+  { label: "15m", value: 900, desc: "Comprehensive" },
 ];
 
 export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, isLoading = false }) => {
@@ -357,7 +363,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
                     }`}
                   >
                     <Clock className="w-3 h-3" strokeWidth={2} />
-                    <span>{selectedDuration !== null ? selectedDuration + "s" : "Auto"}</span>
+                    <span>{selectedDuration !== null ? (selectedDuration >= 60 ? selectedDuration / 60 + "m" : selectedDuration + "s") : "Auto"}</span>
                     <motion.span animate={{ rotate: durationOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
                     </motion.span>
@@ -371,9 +377,9 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
                         exit={{ opacity: 0, scale: 0.96, y: 4 }}
                         transition={{ duration: 0.2, ease: SOFT }}
                         style={{ transformOrigin: "bottom left" }}
-                        className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-28 rounded-xl overflow-hidden lg shadow-[0_12px_32px_rgba(0,0,0,0.10)]"
+                        className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-36 rounded-xl overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.10)]"
                       >
-                        <div style={{ background: "rgba(249,250,251,0.95)" }}>
+                        <div style={{ background: "rgba(249,250,251,0.95)", maxHeight: "300px", overflowY: "auto" }}>
                           <button
                             type="button"
                             onClick={() => { setSelectedDuration(null); setDurationOpen(false); }}
