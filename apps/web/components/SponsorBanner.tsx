@@ -36,11 +36,11 @@ export const SponsorBanner: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xs sm:text-sm font-semibold text-[#1d1d1f] truncate">
-                <span className="text-[#86868b] font-normal">Sponsored by </span>
+                <span className="text-[#86868b] font-normal">Made by </span>
                 programmersd21
               </p>
               <p className="text-[10px] sm:text-[11px] text-[#86868b] truncate">
-                Support open-source motion graphics
+                Help me keep building
               </p>
             </div>
           </div>
