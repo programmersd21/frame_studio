@@ -20,6 +20,7 @@
     "lucide-react": "^0.473.0",
     "nanoid": "^5.0.9",
     "next": "^15.1.5",
+    "pdf-parse": "^2.4.5",
     "pipeline": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

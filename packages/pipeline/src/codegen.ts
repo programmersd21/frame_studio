@@ -322,9 +322,14 @@ function findExistingComponent(
 export async function generateCode(
   brief: Brief,
   assets: AssetRef[] = [],
-  modelName?: string
+  modelName?: string,
+  pdfContent?: string,
 ): Promise<CodeFileMap> {
-  const userContent = JSON.stringify({ brief, assets }, null, 2);
+  let userContent = JSON.stringify({ brief, assets }, null, 2);
+  if (pdfContent) {
+    const truncated = pdfContent.length > 4000 ? pdfContent.slice(0, 4000) + "\n[...truncated...]" : pdfContent;
+    userContent += `\n\n--- EXTRACTED PDF CONTENT ---\n${truncated}\n--- END PDF CONTENT ---\nUse this PDF content as the primary source for scene data, statistics, and narrative.`;
+  }
 
   for (let attempt = 0; attempt <= MAX_CODEGEN_RETRIES; attempt++) {
     const messages = [

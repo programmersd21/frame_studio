@@ -111,6 +111,12 @@ Also update the Supabase Dashboard **Site URL** and **Redirect URLs** to match y
 - **Model selector** (8 Gemini models)
 - **Real-time progress screen** with stage updates
 - **Apply-style presets** for quick prompts
+- **Duration presets** — 5s, 10s, 15s, 30s, or Auto
+- **PDF content extraction** — upload PDFs and generate videos from their content
+- **Multi-video generation queue** — queue up multiple prompts and generate them sequentially
+- **Sponsor banner** — dismissible sponsor slot on homepage
+- **Data visualization** — AI generates SVG charts, graphs, and data tables in videos
+- **Improved system prompts** — better layout, chart rendering, and presentation quality
 
 ### Account (Supabase)
 - **Sign up / sign in** - email/password or magic link
@@ -120,7 +126,7 @@ Also update the Supabase Dashboard **Site URL** and **Redirect URLs** to match y
 - **Video history** - save videos, browse on profile, preview & delete
 
 ### UI
-- **Apple-level design** - glassmorphism, Plus Jakarta Sans, subtle shadows
+- **Apple Liquid Glass design** - frosted glass materials, specular highlights, grain textures
 - **Responsive layout** - bottom tab nav on mobile, floating pill header on desktop
 - **PWA-ready** - manifest.json, standalone display, apple-touch-icon
 - **Custom animated cursor** - macOS-style arrow (hidden on touch devices)
@@ -156,6 +162,7 @@ apps/web/                 Next.js app with API routes and UI
 │   │   ├── apikey/       API key management (httpOnly cookie)
 │   │   ├── auth/user/    Current user endpoint
 │   │   ├── generate/     Video generation pipeline
+│   │   ├── parse-pdf/    PDF text extraction endpoint
 │   │   └── videos/       Save / list / delete saved videos
 │   ├── auth/
 │   │   ├── callback/     OAuth + auth callback handler
@@ -169,7 +176,9 @@ apps/web/                 Next.js app with API routes and UI
 ├── components/
 │   ├── Header.tsx        Desktop pill nav / mobile bottom tab bar
 │   ├── PreviewScreen.tsx Full-screen mobile preview with save/download
-│   └── ...               PromptBox, ProgressScreen, Footer, etc.
+│   ├── PromptBox.tsx     Prompt input with model/duration/PDF/queue controls
+│   ├── SponsorBanner.tsx Dismissible sponsor banner with glass material
+│   └── ...               ProgressScreen, Footer, ApiKeyModal, etc.
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts     Browser Supabase client
@@ -177,7 +186,8 @@ apps/web/                 Next.js app with API routes and UI
 │   └── apiKey.ts         Server-side API key cookie management
 ├── public/
 │   ├── manifest.json     PWA manifest
-│   └── icon-192.svg      App icon
+│   ├── icon.svg          App icon (256x256)
+│   └── favicon.ico       Browser favicon
 └── middleware.ts          Auth redirect middleware
 packages/pipeline/          AI processing (prompts, schemas, LLM client)
 packages/remotion-skeleton/ Template for video projects

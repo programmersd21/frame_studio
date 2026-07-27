@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
     const prompt = body.prompt?.trim();
     const model = body.model?.trim() || "gemini-3.6-flash";
     const clientApiKey = body.apiKey?.trim();
+    const durationSeconds = body.durationSeconds ? Number(body.durationSeconds) : undefined;
+    const pdfContent = body.pdfContent?.trim() || undefined;
 
     if (!prompt) {
       return NextResponse.json({ error: "Prompt is required." }, { status: 400 });
@@ -59,7 +61,7 @@ export async function POST(req: NextRequest) {
 
     // STAGE 1: PLAN
     console.log(`[Generate] STAGE: Planning...`);
-    const planResult = await planFromPrompt(prompt, model);
+    const planResult = await planFromPrompt(prompt, { model, durationSeconds, pdfContent });
 
     if (!planResult.valid) {
       return NextResponse.json(
@@ -73,7 +75,7 @@ export async function POST(req: NextRequest) {
 
     // STAGE 2: CODEGEN
     console.log(`[Generate] STAGE: Generating Code...`);
-    let currentCode: CodeFileMap = await generateCode(brief, [], model);
+    let currentCode: CodeFileMap = await generateCode(brief, [], model, pdfContent);
     console.log(`[Generate] Codegen complete. Files: ${Object.keys(currentCode).join(", ")}`);
 
     // STAGE 3 & 4: COMPILE & FIX LOOP

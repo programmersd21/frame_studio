@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GenerateButton, ButtonState } from "./GenerateButton";
-import { Command, ChevronDown, ArrowUpRight, Sparkles } from "lucide-react";
+import { Command, ChevronDown, ArrowUpRight, Sparkles, FileText, X, Upload } from "lucide-react";
 
 const SOFT = [0.22, 1, 0.36, 1] as const;
 
@@ -17,7 +17,8 @@ const PLACEHOLDERS = [
 ];
 
 interface PromptBoxProps {
-  onGenerate: (prompt: string, model: string) => void;
+  onGenerate: (prompt: string, model: string, duration?: number, pdfContent?: string) => void;
+  onAddToQueue?: (prompt: string, model: string, duration?: number, pdfContent?: string) => void;
   isLoading?: boolean;
 }
 
@@ -41,17 +42,60 @@ const GEMINI_MODELS = [
 
 const DEFAULT_MODEL = "gemini-3.6-flash";
 
-export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = false }) => {
+const DURATION_PRESETS = [
+  { label: "5s", value: 5, desc: "Quick" },
+  { label: "10s", value: 10, desc: "Standard" },
+  { label: "15s", value: 15, desc: "Detailed" },
+  { label: "30s", value: 30, desc: "Full" },
+];
+
+export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, isLoading = false }) => {
   const [prompt, setPrompt]               = useState("");
   const [selectedModel, setSelectedModel]  = useState(DEFAULT_MODEL);
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
   const [modelOpen, setModelOpen]          = useState(false);
   const [buttonState, setButtonState]      = useState<ButtonState>("idle");
   const [isTyping, setIsTyping]            = useState(false);
   const [isFocused, setIsFocused]          = useState(false);
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
+  const [pdfFileName, setPdfFileName]      = useState<string | null>(null);
+  const [pdfContent, setPdfContent]        = useState<string | null>(null);
+  const [pdfUploading, setPdfUploading]    = useState(false);
+  const [pdfError, setPdfError]            = useState("");
   const dropdownRef                        = useRef<HTMLDivElement>(null);
   const typingTimerRef                     = useRef<NodeJS.Timeout>();
   const textareaRef                        = useRef<HTMLTextAreaElement>(null);
+  const pdfInputRef                        = useRef<HTMLInputElement>(null);
+
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPdfUploading(true);
+    setPdfError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/parse-pdf", { method: "POST", body: formData });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to parse PDF");
+      }
+      const data = await res.json();
+      setPdfFileName(file.name);
+      setPdfContent(data.text);
+    } catch (err: any) {
+      setPdfError(err.message || "Failed to parse PDF");
+    } finally {
+      setPdfUploading(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  const removePdf = () => {
+    setPdfFileName(null);
+    setPdfContent(null);
+    setPdfError("");
+  };
 
   useEffect(() => {
     if (isFocused || prompt.length > 0) return;
@@ -86,7 +130,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     if (e) e.preventDefault();
     if (!prompt.trim() || isLoading) return;
     setButtonState("animating");
-    setTimeout(() => onGenerate(prompt.trim(), selectedModel), 500);
+    setTimeout(() => onGenerate(prompt.trim(), selectedModel, selectedDuration ?? undefined, pdfContent ?? undefined), 500);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -185,6 +229,31 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
               </div>
             </div>
 
+            {(pdfFileName || pdfUploading) && (
+              <div className="mt-2 px-1">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0071e3]/[0.04] border border-[#0071e3]/10">
+                  {pdfUploading ? (
+                    <div className="w-4 h-4 border-2 border-[#0071e3]/30 border-t-[#0071e3] rounded-full animate-spin shrink-0" />
+                  ) : (
+                    <FileText className="w-4 h-4 text-[#0071e3] shrink-0" strokeWidth={1.5} />
+                  )}
+                  <span className="text-xs text-[#1d1d1f] truncate flex-1">
+                    {pdfUploading ? "Extracting text from PDF..." : pdfFileName}
+                  </span>
+                  {!pdfUploading && (
+                    <button type="button" onClick={removePdf} className="shrink-0 p-0.5 rounded-full hover:bg-black/[0.06] transition-colors">
+                      <X className="w-3 h-3 text-[#86868b]" strokeWidth={2} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+            {pdfError && (
+              <p className="mt-1.5 text-[11px] text-[#ff3b30] px-1">{pdfError}</p>
+            )}
+
+            <input ref={pdfInputRef} type="file" accept=".pdf" onChange={handlePdfUpload} className="hidden" />
+
             <div className="flex items-center justify-between gap-4 pt-3 border-t border-black/[0.05] mt-2">
               <div className="flex items-center gap-3">
                 <div ref={dropdownRef} className="relative">
@@ -263,9 +332,57 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   <Command className="w-3 h-3" strokeWidth={1.5} />
                   <span>+ Return</span>
                 </div>
+
+                <div className="hidden sm:flex items-center gap-1">
+                  {DURATION_PRESETS.map((d) => (
+                    <button
+                      key={d.value}
+                      type="button"
+                      onClick={() => setSelectedDuration(selectedDuration === d.value ? null : d.value)}
+                      disabled={isLoading}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200 ${
+                        selectedDuration === d.value
+                          ? "bg-[#0071e3] text-white border-[#0071e3] shadow-[0_2px_8px_rgba(0,113,227,0.25)]"
+                          : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
+                      }`}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => pdfInputRef.current?.click()}
+                  disabled={isLoading || pdfUploading}
+                  className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200 ${
+                    pdfFileName
+                      ? "bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20"
+                      : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
+                  }`}
+                >
+                  <Upload className="w-3 h-3" strokeWidth={2} />
+                  <span>PDF</span>
+                </button>
               </div>
 
-              <GenerateButton state={buttonState} onClick={handleSubmit} disabled={!prompt.trim()} />
+              <div className="flex items-center gap-2">
+                {onAddToQueue && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!prompt.trim() || isLoading) return;
+                      onAddToQueue(prompt.trim(), selectedModel, selectedDuration ?? undefined, pdfContent ?? undefined);
+                      setPrompt("");
+                    }}
+                    disabled={!prompt.trim() || isLoading}
+                    className="px-3 py-2 rounded-xl text-[11px] font-semibold text-[#86868b] bg-black/[0.04] hover:bg-black/[0.08] hover:text-[#1d1d1f] border border-black/[0.06] transition-all duration-200 disabled:opacity-40"
+                  >
+                    + Queue
+                  </button>
+                )}
+                <GenerateButton state={buttonState} onClick={handleSubmit} disabled={!prompt.trim()} />
+              </div>
             </div>
           </div>
         </motion.div>
