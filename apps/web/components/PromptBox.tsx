@@ -84,8 +84,13 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
       formData.append("file", file);
       const res = await fetch("/api/parse-pdf", { method: "POST", body: formData });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to parse PDF");
+        const text = await res.text();
+        try {
+          const data = JSON.parse(text);
+          throw new Error(data.error || "Failed to parse PDF");
+        } catch {
+          throw new Error(text.slice(0, 200) || "Server error (" + res.status + ")");
+        }
       }
       const data = await res.json();
       setPdfFileName(file.name);

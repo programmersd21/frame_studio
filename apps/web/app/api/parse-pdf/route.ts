@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const pdf = require("pdf-parse");
+const { PDFParse } = require("pdf-parse");
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -24,17 +24,17 @@ export async function POST(req: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const data = await pdf(buffer);
+    const parser = new PDFParse({ data: buffer, verbosity: 0 });
+    const result = await parser.getText();
+    const text = result.text?.trim();
 
-    const text = data.text?.trim();
     if (!text) {
       return NextResponse.json({ error: "Could not extract text from PDF. The file may be image-based." }, { status: 400 });
     }
 
     return NextResponse.json({
       text,
-      pages: data.numpages,
-      title: data.info?.Title || null,
+      pages: result.total,
     });
   } catch (err: any) {
     console.error("[Parse PDF] Error:", err);
