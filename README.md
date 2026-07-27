@@ -110,11 +110,10 @@ Also update the Supabase Dashboard **Site URL** and **Redirect URLs** to match y
 - **Zero infrastructure** — renders entirely in the browser
 - **Model selector** (8 Gemini models)
 - **Real-time progress screen** with stage updates
-- **Apply-style presets** for quick prompts
-- **Duration presets** — 5s, 10s, 15s, 30s, or Auto
+- **Concept presets** — apply-style buttons for quick prompts
+- **Duration presets** — Auto (AI), 5s, 10s, 15s, 30s, 1m, 2m, 3m, 5m, 10m, 15m
 - **PDF content extraction** — upload PDFs and generate videos from their content
-- **Multi-video generation queue** — queue up multiple prompts and generate them sequentially
-- **Sponsor banner** — dismissible sponsor slot on homepage
+- **Sponsor banner** — permanent banner linking to GitHub Sponsors
 - **Data visualization** — AI generates SVG charts, graphs, and data tables in videos
 - **Improved system prompts** — better layout, chart rendering, and presentation quality
 
@@ -176,7 +175,7 @@ apps/web/                 Next.js app with API routes and UI
 ├── components/
 │   ├── Header.tsx        Desktop pill nav / mobile bottom tab bar
 │   ├── PreviewScreen.tsx Full-screen mobile preview with save/download
-│   ├── PromptBox.tsx     Prompt input with model/duration/PDF/queue controls
+│   ├── PromptBox.tsx     Prompt input with model/duration/PDF controls
 │   ├── SponsorBanner.tsx Dismissible sponsor banner with glass material
 │   └── ...               ProgressScreen, Footer, ApiKeyModal, etc.
 ├── lib/

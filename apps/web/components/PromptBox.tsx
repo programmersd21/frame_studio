@@ -18,7 +18,6 @@ const PLACEHOLDERS = [
 
 interface PromptBoxProps {
   onGenerate: (prompt: string, model: string, duration?: number, pdfContent?: string) => void;
-  onAddToQueue?: (prompt: string, model: string, duration?: number, pdfContent?: string) => void;
   isLoading?: boolean;
 }
 
@@ -55,7 +54,7 @@ const DURATION_PRESETS = [
   { label: "15m", value: 900, desc: "Comprehensive" },
 ];
 
-export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, isLoading = false }) => {
+export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = false }) => {
   const [prompt, setPrompt]               = useState("");
   const [selectedModel, setSelectedModel]  = useState(DEFAULT_MODEL);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
@@ -429,20 +428,6 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, onAddToQueue, 
               </div>
 
               <div className="flex items-center gap-2">
-                {onAddToQueue && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!prompt.trim() || isLoading) return;
-                      onAddToQueue(prompt.trim(), selectedModel, selectedDuration ?? undefined, pdfContent ?? undefined);
-                      setPrompt("");
-                    }}
-                    disabled={!prompt.trim() || isLoading}
-                    className="px-3 py-2 rounded-xl text-[11px] font-semibold text-[#86868b] bg-black/[0.04] hover:bg-black/[0.08] hover:text-[#1d1d1f] border border-black/[0.06] transition-all duration-200 disabled:opacity-40"
-                  >
-                    + Queue
-                  </button>
-                )}
                 <GenerateButton state={buttonState} onClick={handleSubmit} disabled={!prompt.trim()} />
               </div>
             </div>
