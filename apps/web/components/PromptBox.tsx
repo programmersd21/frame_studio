@@ -180,8 +180,8 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const resWidth = Math.round(selectedQuality.height * selectedAspect.w / selectedAspect.h);
-  const resHeight = selectedQuality.height;
+  const resWidth = Math.round(selectedQuality.height * selectedAspect.w / selectedAspect.h / 2) * 2;
+  const resHeight = Math.round(selectedQuality.height / 2) * 2;
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
