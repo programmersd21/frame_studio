@@ -26,8 +26,8 @@ export const GenerateButton: React.FC<GenerateButtonProps> = ({ state, onClick, 
       onClick={onClick}
       disabled={disabled || state !== "idle"}
       style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.01em" }}
-      className="relative flex items-center justify-center gap-2 px-5 py-2.5 rounded-full overflow-hidden
-        bg-[#1d1d1f] text-white text-xs font-semibold min-w-[120px] h-[36px]
+      className="relative flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 rounded-full overflow-hidden
+        bg-[#1d1d1f] text-white text-[11px] sm:text-xs font-semibold min-w-[80px] sm:min-w-[120px] h-[34px] sm:h-[36px]
         shadow-[0_4px_14px_rgba(0,0,0,0.14)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.22)]"
     >
       <AnimatePresence mode="wait">

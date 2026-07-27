@@ -235,7 +235,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
           }}
         >
           <div
-            className="relative rounded-[calc(1rem-1.5px)] px-6 pt-6 pb-5 lg"
+            className="relative rounded-[calc(1rem-1.5px)] px-4 sm:px-6 pt-5 sm:pt-6 pb-4 sm:pb-5 lg"
             style={{ background: "rgba(249,250,251,0.82)" }}
           >
             <div className="relative">
@@ -246,7 +246,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   onChange={handlePromptChange}
                   onKeyDown={handleKeyDown}
                   disabled={isLoading}
-                  rows={3}
+                  rows={2}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   style={{
@@ -320,28 +320,28 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
 
             <input ref={pdfInputRef} type="file" accept=".pdf" onChange={handlePdfUpload} className="hidden" />
 
-            <div className="flex items-center justify-between gap-4 pt-3 border-t border-black/[0.05] mt-2">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-2 sm:gap-4 pt-3 border-t border-black/[0.05] mt-2">
+              <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
                 <div ref={dropdownRef} className="relative">
                   <button
                     type="button"
                     onClick={() => setModelOpen((v) => !v)}
                     disabled={isLoading}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-medium border transition-all duration-200 ${
                       modelOpen
                         ? "bg-[#0071e3] text-white border-[#0071e3] shadow-[0_4px_14px_rgba(0,113,227,0.28)]"
                         : "bg-black/[0.04] text-[#1d1d1f] border-black/10 hover:bg-black/[0.08] hover:border-black/20"
                     }`}
-                    style={{ fontFamily: "var(--font-sans)" }}
+                    style={{ fontFamily: "var(--font-sans)", maxWidth: "160px" }}
                   >
                     <motion.span
-                      className="flex items-center gap-1.5"
+                      className="flex items-center gap-1.5 truncate"
                       animate={{ gap: modelOpen ? "6px" : "4px" }}
                     >
-                      <Sparkles className="w-3 h-3" strokeWidth={2} />
-                      <span>{selectedLabel}</span>
+                      <Sparkles className="w-3 h-3 shrink-0" strokeWidth={2} />
+                      <span className="truncate">{selectedLabel}</span>
                     </motion.span>
-                    <motion.span
+                    <motion.span className="shrink-0"
                       animate={{ rotate: modelOpen ? 180 : 0 }}
                       transition={{ duration: 0.28, ease: SOFT }}
                     >
@@ -461,7 +461,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   </AnimatePresence>
                 </div>
 
-                <div ref={qualityRef} className="relative">
+                <div ref={qualityRef} className="relative hidden sm:block">
                   <button
                     type="button"
                     onClick={() => setQualityOpen((v) => !v)}
@@ -511,7 +511,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   </AnimatePresence>
                 </div>
 
-                <div ref={aspectRef} className="relative">
+                <div ref={aspectRef} className="relative hidden sm:block">
                   <button
                     type="button"
                     onClick={() => setAspectOpen((v) => !v)}
