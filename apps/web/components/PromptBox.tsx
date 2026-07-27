@@ -54,11 +54,18 @@ const DURATION_PRESETS = [
   { label: "15m", value: 900, desc: "Comprehensive" },
 ];
 
-const RESOLUTION_PRESETS = [
-  { label: "720p",  width: 1280, height: 720,  desc: "HD" },
-  { label: "1080p", width: 1920, height: 1080, desc: "Full HD" },
-  { label: "2K",    width: 2560, height: 1440, desc: "QHD" },
-  { label: "4K",    width: 3840, height: 2160, desc: "Ultra HD" },
+const QUALITY_PRESETS = [
+  { label: "720p",  height: 720,  desc: "HD" },
+  { label: "1080p", height: 1080, desc: "Full HD" },
+  { label: "2K",    height: 1440, desc: "QHD" },
+  { label: "4K",    height: 2160, desc: "Ultra HD" },
+];
+
+const ASPECT_RATIO_PRESETS = [
+  { label: "16:9",  w: 16, h: 9,  desc: "Landscape" },
+  { label: "4:3",   w: 4,  h: 3,  desc: "Standard" },
+  { label: "1:1",   w: 1,  h: 1,  desc: "Square" },
+  { label: "9:16",  w: 9,  h: 16, desc: "Portrait" },
 ];
 
 export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = false }) => {
@@ -74,11 +81,14 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
   const [pdfUploading, setPdfUploading]    = useState(false);
   const [pdfError, setPdfError]            = useState("");
   const [durationOpen, setDurationOpen] = useState(false);
-  const [selectedResolution, setSelectedResolution] = useState<(typeof RESOLUTION_PRESETS)[number]>(RESOLUTION_PRESETS[1]);
-  const [resolutionOpen, setResolutionOpen] = useState(false);
+  const [selectedQuality, setSelectedQuality] = useState<(typeof QUALITY_PRESETS)[number]>(QUALITY_PRESETS[1]);
+  const [selectedAspect, setSelectedAspect] = useState<(typeof ASPECT_RATIO_PRESETS)[number]>(ASPECT_RATIO_PRESETS[0]);
+  const [qualityOpen, setQualityOpen] = useState(false);
+  const [aspectOpen, setAspectOpen] = useState(false);
   const dropdownRef                        = useRef<HTMLDivElement>(null);
   const durationRef                        = useRef<HTMLDivElement>(null);
-  const resolutionRef                      = useRef<HTMLDivElement>(null);
+  const qualityRef                         = useRef<HTMLDivElement>(null);
+  const aspectRef                          = useRef<HTMLDivElement>(null);
   const typingTimerRef                     = useRef<NodeJS.Timeout>();
   const textareaRef                        = useRef<HTMLTextAreaElement>(null);
   const pdfInputRef                        = useRef<HTMLInputElement>(null);
@@ -150,13 +160,26 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (resolutionRef.current && !resolutionRef.current.contains(e.target as Node)) {
-        setResolutionOpen(false);
+      if (qualityRef.current && !qualityRef.current.contains(e.target as Node)) {
+        setQualityOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (aspectRef.current && !aspectRef.current.contains(e.target as Node)) {
+        setAspectOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const resWidth = Math.round(selectedQuality.height * selectedAspect.w / selectedAspect.h);
+  const resHeight = selectedQuality.height;
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
@@ -170,7 +193,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
     if (!prompt.trim() || isLoading) return;
     setButtonState("animating");
     const combined = pdfFiles.map((f) => `--- ${f.name} ---\n${f.content}`).join("\n\n");
-    setTimeout(() => onGenerate(prompt.trim(), selectedModel, selectedDuration ?? undefined, combined || undefined, selectedResolution.width, selectedResolution.height), 500);
+    setTimeout(() => onGenerate(prompt.trim(), selectedModel, selectedDuration ?? undefined, combined || undefined, resWidth, resHeight), 500);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -437,27 +460,27 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                   </AnimatePresence>
                 </div>
 
-                <div ref={resolutionRef} className="relative">
+                <div ref={qualityRef} className="relative">
                   <button
                     type="button"
-                    onClick={() => setResolutionOpen((v) => !v)}
+                    onClick={() => setQualityOpen((v) => !v)}
                     disabled={isLoading}
                     className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200 ${
-                      resolutionOpen
+                      qualityOpen
                         ? "bg-[#0071e3] text-white border-[#0071e3] shadow-[0_2px_8px_rgba(0,113,227,0.25)]"
                         : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
                     }`}
                   >
                     <Monitor className="w-3 h-3" strokeWidth={2} />
-                    <span>{selectedResolution.label}</span>
-                    <motion.span animate={{ rotate: resolutionOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <span>{selectedQuality.label}</span>
+                    <motion.span animate={{ rotate: qualityOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
                     </motion.span>
                   </button>
                   <AnimatePresence>
-                    {resolutionOpen && (
+                    {qualityOpen && (
                       <motion.div
-                        key="resolution-dropdown"
+                        key="quality-dropdown"
                         initial={{ opacity: 0, scale: 0.94, y: 6 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.96, y: 4 }}
@@ -466,13 +489,62 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                         className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-32 rounded-xl overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.10)]"
                       >
                         <div style={{ background: "rgba(249,250,251,0.95)" }}>
-                          {RESOLUTION_PRESETS.map((r) => (
+                          {QUALITY_PRESETS.map((r) => (
                             <button
                               key={r.label}
                               type="button"
-                              onClick={() => { setSelectedResolution(r); setResolutionOpen(false); }}
+                              onClick={() => { setSelectedQuality(r); setQualityOpen(false); }}
                               className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
-                                selectedResolution.label === r.label
+                                selectedQuality.label === r.label
+                                  ? "text-[#0071e3] bg-[#0071e3]/[0.06]"
+                                  : "text-[#1d1d1f] hover:bg-black/[0.04]"
+                              }`}
+                            >
+                              <span>{r.label}</span>
+                              <span className="text-[10px] text-[#a1a1a6]">{r.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div ref={aspectRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setAspectOpen((v) => !v)}
+                    disabled={isLoading}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200 ${
+                      aspectOpen
+                        ? "bg-[#0071e3] text-white border-[#0071e3] shadow-[0_2px_8px_rgba(0,113,227,0.25)]"
+                        : "bg-black/[0.03] text-[#86868b] border-black/[0.06] hover:bg-black/[0.06] hover:text-[#1d1d1f]"
+                    }`}
+                  >
+                    <span className="text-[10px] font-semibold leading-none">{selectedAspect.label}</span>
+                    <motion.span animate={{ rotate: aspectOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
+                    </motion.span>
+                  </button>
+                  <AnimatePresence>
+                    {aspectOpen && (
+                      <motion.div
+                        key="aspect-dropdown"
+                        initial={{ opacity: 0, scale: 0.94, y: 6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: 4 }}
+                        transition={{ duration: 0.2, ease: SOFT }}
+                        style={{ transformOrigin: "bottom left" }}
+                        className="absolute bottom-[calc(100%+6px)] left-0 z-50 w-36 rounded-xl overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.10)]"
+                      >
+                        <div style={{ background: "rgba(249,250,251,0.95)" }}>
+                          {ASPECT_RATIO_PRESETS.map((r) => (
+                            <button
+                              key={r.label}
+                              type="button"
+                              onClick={() => { setSelectedAspect(r); setAspectOpen(false); }}
+                              className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
+                                selectedAspect.label === r.label
                                   ? "text-[#0071e3] bg-[#0071e3]/[0.06]"
                                   : "text-[#1d1d1f] hover:bg-black/[0.04]"
                               }`}
