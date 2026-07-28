@@ -321,19 +321,19 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
 
             <input ref={pdfInputRef} type="file" accept=".pdf" onChange={handlePdfUpload} className="hidden" />
 
-            <div className="flex items-center justify-between gap-2 sm:gap-4 pt-3 border-t border-black/[0.05] mt-2">
-              <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2 sm:gap-4 pt-3 border-t border-black/[0.05] mt-2 sm:flex-nowrap flex-wrap">
+              <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 sm:flex-1">
                 <div ref={dropdownRef} className="relative">
                   <button
                     type="button"
                     onClick={() => setModelOpen((v) => !v)}
                     disabled={isLoading}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-medium border transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-medium border transition-all duration-200 max-w-[120px] sm:max-w-[160px] ${
                       modelOpen
                         ? "bg-[#0071e3] text-white border-[#0071e3] shadow-[0_4px_14px_rgba(0,113,227,0.28)]"
                         : "bg-black/[0.04] text-[#1d1d1f] border-black/10 hover:bg-black/[0.08] hover:border-black/20"
                     }`}
-                    style={{ fontFamily: "var(--font-sans)", maxWidth: "160px" }}
+                    style={{ fontFamily: "var(--font-sans)" }}
                   >
                     <motion.span
                       className="flex items-center gap-1.5 truncate"
@@ -587,7 +587,7 @@ export const PromptBox: React.FC<PromptBoxProps> = ({ onGenerate, isLoading = fa
                 </button>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2">
                 <GenerateButton state={buttonState} onClick={handleSubmit} disabled={!prompt.trim()} />
               </div>
             </div>
